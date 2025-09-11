@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeisD - 地震实时监测系统</title>
+    <!-- 引入外部资源 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@3.3.1/dist/maplibre-gl.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/maplibre-gl@3.3.1/dist/maplibre-gl.css" rel="stylesheet" />
+    
+    <!-- Tailwind配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0A3D62', // 主色调：深蓝色（专业、可靠）
+                        secondary: '#3C6382', // 辅助蓝色
+                        warning: '#E55039', // 警示红（地震预警）
+                        success: '#2ECC71', // 安全绿
+                        dark: '#1E293B',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            }
+            .pulse-animation {
+                animation: pulse 2s infinite;
+            }
+            .slide-in {
+                animation: slideIn 0.6s ease-out forwards;
+            }
+            .fade-in {
+                animation: fadeIn 0.8s ease-out forwards;
+            }
+            .card-hover {
+                @apply hover:shadow-xl hover:-translate-y-1 transition-all duration-300;
+            }
+            .section-padding {
+                @apply py-16 md:py-24;
+            }
+        }
+        
+        /* 全局样式 */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* 动画效果 */
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(-30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 地图容器样式 */
+        #map-container {
+            height: 500px;
+            width: 100%;
+            border-radius: 0.75rem;
+            z-index: 10;
+        }
+        
+        /* 延迟动画类 */
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .delay-500 { animation-delay: 0.5s; }
+    </style>
+</head>
+<body class="font-sans bg-gray-50 text-dark antialiased">
+    <!-- 导航栏 -->
+    <nav id="navbar" class="fixed w-full bg-white/95 backdrop-blur-sm shadow-md z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <a href="#hero" class="flex items-center space-x-2">
+                    <div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+                        <i class="fa fa-waves text-white text-xl"></i>
+                    </div>
+                    <span class="font-bold text-xl">SeisD</span>
+                </a>
+                
+                <!-- 桌面端导航 -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#overview" class="text-dark/80 hover:text-primary transition-colors">系统概述</a>
+                    <a href="#realtime" class="text-dark/80 hover:text-primary transition-colors">实时监测</a>
+                    <a href="#features" class="text-dark/80 hover:text-primary transition-colors">核心功能</a>
+                    <a href="#cases" class="text-dark/80 hover:text-primary transition-colors">预警案例</a>
+                    <a href="#contact" class="px-5 py-2 bg-warning text-white rounded-lg hover:bg-warning/90 transition-colors shadow-lg shadow-warning/20">
+                        紧急联系
+                    </a>
+                </div>
+                
+                <!-- 移动端菜单按钮 -->
+                <button id="menu-toggle" class="md:hidden text-dark hover:text-primary transition-colors">
+                    <i class="fa fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 移动端导航菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t shadow-md">
+            <div class="container mx-auto px-4 py-3 space-y-3">
+                <a href="#overview" class="block py-2 text-dark/80 hover:text-primary transition-colors">系统概述</a>
+                <a href="#realtime" class="block py-2 text-dark/80 hover:text-primary transition-colors">实时监测</a>
+                <a href="#features" class="block py-2 text-dark/80 hover:text-primary transition-colors">核心功能</a>
+                <a href="#cases" class="block py-2 text-dark/80 hover:text-primary transition-colors">预警案例</a>
+                <a href="#contact" class="block py-2 px-4 bg-warning text-white rounded-lg text-center hover:bg-warning/90 transition-colors">
+                    紧急联系
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <header id="hero" class="relative pt-16 min-h-screen flex items-center overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/90 to-secondary/90 -z-10"></div>
+        
+        <!-- 动态背景元素 -->
+        <div class="absolute inset-0 overflow-hidden opacity-10 -z-10">
+            <div id="wave-animation" class="absolute bottom-0 left-0 w-full h-1/2"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10">
+            <div class="max-w-4xl">
+                <div class="inline-block px-4 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium mb-6 slide-in">
+                    实时监测 · 快速响应 · 智能预警
+                </div>
+                <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-bold leading-tight mb-6 text-white text-shadow slide-in delay-100">
+                    SeisD<br>
+                    <span class="text-warning">地震实时监测系统</span>
+                </h1>
+                <p class="text-lg md:text-xl text-white/90 mb-10 max-w-2xl slide-in delay-200">
+                    集地震监测、数据分析、实时预警于一体的综合系统，为防震减灾提供精准数据支持和决策依据
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 slide-in delay-300">
+                    <a href="#realtime" class="px-8 py-3 bg-warning text-white rounded-lg font-medium hover:bg-warning/90 transition-colors shadow-lg shadow-warning/30 flex items-center justify-center">
+                        <i class="fa fa-chart-line mr-2"></i> 查看实时数据
+                    </a>
+                    <a href="#features" class="px-8 py-3 bg-white/20 backdrop-blur-sm text-white border border-white/30 rounded-lg font-medium hover:bg-white/30 transition-colors flex items-center justify-center">
+                        <i class="fa fa-info-circle mr-2"></i> 了解系统功能
+                    </a>
+                </div>
+                
+                <!-- 状态指标 -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 slide-in delay-400">
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                        <div class="text-white/80 text-sm mb-1">监测台站</div>
+                        <div class="text-white text-2xl font-bold">2,387</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                        <div class="text-white/80 text-sm mb-1">覆盖区域</div>
+                        <div class="text-white text-2xl font-bold">96.8%</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                        <div class="text-white/80 text-sm mb-1">响应时间</div>
+                        <div class="text-white text-2xl font-bold">&lt;3秒</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                        <div class="text-white/80 text-sm mb-1">系统状态</div>
+                        <div class="text-white text-2xl font-bold flex items-center">
+                            <span class="w-2 h-2 bg-success rounded-full mr-2 pulse-animation"></span>
+                            正常运行
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 滚动指示器 -->
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <a href="#overview" class="text-white/70 hover:text-white transition-colors">
+                <i class="fa fa-chevron-down text-2xl"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- 系统概述 -->
+    <section id="overview" class="section-padding bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">系统概述</h2>
+                <div class="w-20 h-1 bg-primary mx-auto mb-6"></div>
+                <p class="text-dark/70 max-w-2xl mx-auto">SeisD地震实时监测系统是一套集成化的地震监测解决方案，采用先进的传感技术和人工智能算法</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="order-2 md:order-1">
+                    <h3 class="text-2xl font-semibold mb-6 text-primary">关于SeisD系统</h3>
+                    <p class="text-dark/80 mb-6 leading-relaxed">
+                        SeisD地震实时监测系统通过分布在各地的地震监测台站网络，实时采集地震波数据，
+                        结合人工智能算法快速识别地震事件，计算震源参数，并生成精确的地震预警信息。
+                    </p>
+                    <p class="text-dark/80 mb-8 leading-relaxed">
+                        系统可在地震发生后数秒内完成分析并发布预警信息，为震中周边地区争取宝贵的应急响应时间，
+                        有效减少人员伤亡和财产损失。
+                    </p>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="mt-1 mr-4 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                                <i class="fa fa-bolt"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg mb-1">实时数据采集</h4>
+                                <p class="text-dark/70">通过高密度监测网络，实时采集地震波数据，采样率高达1000Hz</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="mt-1 mr-4 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                                <i class="fa fa-brain"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg mb-1">智能算法分析</h4>
+                                <p class="text-dark/70">采用深度学习算法，快速识别地震信号，准确计算震级、震源深度和位置</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="mt-1 mr-4 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                                <i class="fa fa-bell"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg mb-1">多渠道预警发布</h4>
+                                <p class="text-dark/70">通过多种渠道及时发布预警信息，包括短信、APP推送、广播电视和专用接收终端</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="order-1 md:order-2 relative">
+                    <div class="rounded-2xl overflow-hidden shadow-xl">
+                        <img src="https://picsum.photos/id/1015/800/600" alt="地震监测系统架构" class="w-full h-auto">
+                    </div>
+                    <div class="absolute -bottom-6 -left-6 bg-white p-6 rounded-xl shadow-lg hidden md:block">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-full bg-success/10 flex items-center justify-center text-success">
+                                <i class="fa fa-shield text-xl"></i>
+                            </div>
+                            <div>
+                                <div class="font-medium">系统可靠性</div>
+                                <div class="text-dark/70 text-sm">99.9% 连续运行时间</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 实时监测 -->
+    <section id="realtime" class="section-padding bg-gray-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">实时监测数据</h2>
+                <div class="w-20 h-1 bg-primary mx-auto mb-6"></div>
+                <p class="text-dark/70 max-w-2xl mx-auto">实时展示地震活动监测数据，包括最近地震事件、地震活动趋势和监测台站状态</p>
+            </div>
+            
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- 实时监测地图 -->
+                <div class="lg:col-span-2 bg-white rounded-xl shadow-md p-6 card-hover">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-semibold">地震活动实时监测地图</h3>
+                        <div class="text-sm text-dark/60">
+                            最后更新: <span id="last-update">2023-06-15 14:32:45</span>
+                        </div>
+                    </div>
+                    <div id="map-container" class="relative">
+                        <!-- 地图将通过JavaScript初始化 -->
+                        <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg shadow-md p-3 z-20">
+                            <div class="flex items-center mb-2">
+                                <span class="w-3 h-3 bg-warning rounded-full mr-2"></span>
+                                <span class="text-sm font-medium">M ≥ 5.0</span>
+                            </div>
+                            <div class="flex items-center mb-2">
+                                <span class="w-3 h-3 bg-orange-500 rounded-full mr-2"></span>
+                                <span class="text-sm font-medium">3.0 ≤ M < 5.0</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+                                <span class="text-sm font-medium">M < 3.0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 最近地震事件 -->
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                    <h3 class="text-xl font-semibold mb-6">最近地震事件</h3>
+                    <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+                        <!-- 地震事件1 -->
+                        <div class="border-l-4 border-warning pl-4 py-2">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-medium">四川宜宾市地震</h4>
+                                    <p class="text-dark/70 text-sm">2023-06-14 08:23:15</p>
+                                </div>
+                                <span class="bg-warning/10 text-warning px-2 py-1 rounded text-sm font-medium">M 4.2</span>
+                            </div>
+                            <p class="text-dark/70 text-sm mt-2">深度: 12 km | 震中: 北纬28.32°，东经104.93°</p>
+                        </div>
+                        
+                        <!-- 地震事件2 -->
+                        <div class="border-l-4 border-orange-500 pl-4 py-2">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-medium">新疆克孜勒苏州地震</h4>
+                                    <p class="text-dark/70 text-sm">2023-06-13 16:47:02</p>
+                                </div>
+                                <span class="bg-orange-500/10 text-orange-500 px-2 py-1 rounded text-sm font-medium">M 3.6</span>
+                            </div>
+                            <p class="text-dark/70 text-sm mt-2">深度: 8 km | 震中: 北纬39.87°，东经73.65°</p>
+                        </div>
+                        
+                        <!-- 地震事件3 -->
+                        <div class="border-l-4 border-blue-500 pl-4 py-2">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-medium">台湾花莲县地震</h4>
+                                    <p class="text-dark/70 text-sm">2023-06-12 22:15:33</p>
+                                </div>
+                                <span class="bg-blue-500/10 text-blue-500 px-2 py-1 rounded text-sm font-medium">M 2.8</span>
+                            </div>
+                            <p class="text-dark/70 text-sm mt-2">深度: 15 km | 震中: 北纬23.97°，东经121.61°</p>
+                        </div>
+                        
+                        <!-- 地震事件4 -->
+                        <div class="border-l-4 border-blue-500 pl-4 py-2">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-medium">云南大理州地震</h4>
+                                    <p class="text-dark/70 text-sm">2023-06-12 10:08:47</p>
+                                </div>
+                                <span class="bg-blue-500/10 text-blue-500 px-2 py-1 rounded text-sm font-medium">M 2.5</span>
+                            </div>
+                            <p class="text-dark/70 text-sm mt-2">深度: 10 km | 震中: 北纬25.63°，东经100.12°</p>
+                        </div>
+                        
+                        <!-- 地震事件5 -->
+                        <div class="border-l-4 border-orange-500 pl-4 py-2">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-medium">甘肃酒泉市地震</h4>
+                                    <p class="text-dark/70 text-sm">2023-06-11 18:32:19</p>
+                                </div>
+                                <span class="bg-orange-500/10 text-orange-500 px-2 py-1 rounded text-sm font-medium">M 3.2</span>
+                            </div>
+                            <p class="text-dark/70 text-sm mt-2">深度: 6 km | 震中: 北纬39.75°，东经98.52°</p>
+                        </div>
+                    </div>
+                    <a href="#" class="text-primary hover:text-primary/80 font-medium flex items-center mt-6 transition-colors">
+                        查看更多历史数据 <i class="fa fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 地震活动统计 -->
+            <div class="grid md:grid-cols-2 gap-8 mt-8">
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                    <h3 class="text-xl font-semibold mb-6">地震活动月度统计</h3>
+                    <canvas id="monthlyChart" height="250"></canvas>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                    <h3 class="text-xl font-semibold mb-6">地震震级分布</h3>
+                    <canvas id="magnitudeChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 核心功能 -->
+    <section id="features" class="section-padding bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">核心功能</h2>
+                <div class="w-20 h-1 bg-primary mx-auto mb-6"></div>
+                <p class="text-dark/70 max-w-2xl mx-auto">SeisD地震实时监测系统具备全方位的地震监测与预警功能，为防震减灾提供全面支持</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 功能1 -->
+                <div class="bg-gray-50 p-8 rounded-xl shadow-md card-hover">
+                    <div class="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-2xl mb-6">
+                        <i class="fa fa-waves"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">实时地震监测</h3>
+                    <p class="text-dark/70 mb-4">
+                        全天候监测地震活动，通过分布式传感器网络实时采集地震波数据，
+                        实现地震事件的快速检测与定位。
+                    </p>
+                    <ul class="text-dark/70 space-y-2">
+                        <li class="flex items-center"><i class="fa fa-check text-success mr-2"></i> 毫秒级数据采集</li>
+                        <li class="flex items-center"><i class="fa fa-check text-success mr-2"></i> 高精度定位</li>
+                        <li class="flex items-center"><i class="fa fa-check text-success mr-2"></i> 自动事件识别</li>
+                    </ul>
+                </div>
+                
+                <!-- 功能2 -->
+                <div class="bg-gray-50 p-8 rounded-xl shadow-md card-hover">
+                    <div class="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-2xl mb-6">
+                        <i class="fa fa-bell"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">地震预警发布</h3>
+                    <p class="text-dark/70 mb-4">
+                        在地震波到达前发布预警信息，根据震级和距离计算预警时间，
+                        为用户争取宝贵的应急避险时间。
+                    </p>
+                    <ul class="text-dark/70 space-y-2">
+                        <li class="flex items-center"><i class="fa fa-check text-success mr-2"></i> 多级预警级别</li>
+                        <li class="flex items-center"><i class="fa fa-check text-success mr-2"></i> 多渠道发布</li>
+                        <li class="flex items-center"><i class="fa fa-check text-success mr-2"></i> 定制化预警范围</li>
+                    </ul>
+                </div>
+                
+                <!-- 功能3 -->
+                <div class="bg-gray-50 p-8 rounded-xl shadow-md card-hover">
+                    <div class="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-2xl mb-6">
+                        <i class="fa fa-chart-line"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">数据分析与建模</h3>
+                    <p class="text-dark/70 mb-4">
+                        采用先进算法对地震数据进行深度分析，建立地震活动模型，
+                        提供地震趋势预测和风险评估。
+                    </p>
+                    <ul class="text-dark/70 space-y-2">
+                        <li class="flex items-center"><i class="fa fa-check text-success mr-2"></i> 机器学习分析</li>
+                        <li class="flex items-center"><i class="fa fa-check text-success mr-2"></i> 地震趋势预测</li>
+                        <li class="flex items-center"><i class="fa fa-check text-success mr-2"></i> 风险评估报告</li>
+                    </ul>
+                </div>
+                
+                <!-- 功能4 -->
+                <div class="bg-gray-50 p-8 rounded-xl shadow-md card-hover">
+                    <div class="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-2xl mb-6">
+                        <i class="fa fa-map-marker-alt"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">震害快速评估</h3>
+                    <p class="text-dark/70 mb-4">
+                        地震发生后，结合地质条件和建筑物分布，快速评估震害影响范围和程度，
+                        为应急救援提供决策支持。
+                    </p>
+                    <ul class="text-dark/70 space-y-2">
+                        <li class="flex items-center"><i class="fa fa-check text-success mr-2"></i> 影响范围划定</li>
+                        <li class="flex items-center"><i class="fa fa-check text-success mr-2"></i> 损失评估模型</li>
+                        <li class="flex items-center"><i class="fa fa-check text-success mr-2"></i> 救援资源调度</li>
+                    </ul>
+                </div>
+                
+                <!-- 功能5 -->
+                <div class="bg-gray-50 p-8 rounded-xl shadow-md card-hover">
+                    <div class="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-2xl mb-6">
+                        <i class="fa fa-satellite-dish"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">台站网络管理</h3>
+                    <p class="text-dark/70 mb-4">
+                        对分布在各地的监测台站进行远程管理和状态监控，确保数据采集的连续性和可靠性。
+                    </p>
+                    <ul class="text-dark/70 space-y-2">
+                        <li class="flex items-center"><i class="fa fa-check text-success mr-2"></i> 远程状态监控</li>
+                        <li class="flex items-center"><i class="fa fa-check text-success mr-2"></i> 故障自动报警</li>
+                        <li class="flex items-center"><i class="fa fa-check text-success mr-2"></i> 数据质量评估</li>
+                    </ul>
+                </div>
+                
+                <!-- 功能6 -->
+                <div class="bg-gray-50 p-8 rounded-xl shadow-md card-hover">
+                    <div class="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-2xl mb-6">
+                        <i class="fa fa-file-export"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">数据共享与发布</h3>
+                    <p class="text-dark/70 mb-4">
+                        提供标准化的数据接口和共享平台，支持与政府部门、科研机构和公众的信息共享。
+                    </p>
+                    <ul class="text-dark/70 space-y-2">
+                        <li class="flex items-center"><i class="fa fa-check text-success mr-2"></i> 开放API接口</li>
+                        <li class="flex items-center"><i class="fa fa-check text-success mr-2"></i> 数据可视化展示</li>
+                        <li class="flex items-center"><i class="fa fa-check text-success mr-2"></i> 定制化报表生成</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 预警案例 -->
+    <section id="cases" class="section-padding bg-gray-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">预警成功案例</h2>
+                <div class="w-20 h-1 bg-primary mx-auto mb-6"></div>
+                <p class="text-dark/70 max-w-2xl mx-auto">SeisD系统在多次地震事件中成功实现预警，为防灾减灾做出重要贡献</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- 案例1 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/1019/800/500" alt="四川雅安地震预警案例" class="w-full h-64 object-cover">
+                        <div class="absolute top-4 left-4 bg-warning text-white text-sm px-3 py-1 rounded-full">
+                            成功预警
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-3">四川雅安6.1级地震</h3>
+                        <p class="text-dark/70 mb-4">
+                            2023年4月20日，四川雅安发生6.1级地震，SeisD系统在地震波到达前12秒发出预警，
+                            震中周边城市获得了3-48秒不等的预警时间，学校、医院等人员密集场所及时采取了应急措施，
+                            有效减少了人员伤亡。
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full">预警时间12秒</span>
+                            <span class="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full">影响范围200km</span>
+                            <span class="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full">50万人受益</span>
+                        </div>
+                        <a href="#" class="text-primary hover:text-primary/80 font-medium flex items-center transition-colors">
+                            查看详细报告 <i class="fa fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- 案例2 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/1036/800/500" alt="青海海北地震预警案例" class="w-full h-64 object-cover">
+                        <div class="absolute top-4 left-4 bg-warning text-white text-sm px-3 py-1 rounded-full">
+                            成功预警
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-3">青海海北5.3级地震</h3>
+                        <p class="text-dark/70 mb-4">
+                            2022年11月17日，青海海北州发生5.3级地震，SeisD系统在地震发生后2.3秒完成参数测定，
+                            向周边城镇和重要基础设施发布预警信息，青藏铁路部分路段紧急停车，
+                            避免了可能发生的次生灾害。
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full">预警时间8秒</span>
+                            <span class="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full">铁路应急响应</span>
+                            <span class="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full">无人员伤亡</span>
+                        </div>
+                        <a href="#" class="text-primary hover:text-primary/80 font-medium flex items-center transition-colors">
+                            查看详细报告 <i class="fa fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 联系我们 -->
+    <section id="contact" class="section-padding bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">联系我们</h2>
+                <div class="w-20 h-1 bg-primary mx-auto mb-6"></div>
+                <p class="text-dark/70 max-w-2xl mx-auto">如有任何问题或需要技术支持，请通过以下方式联系我们</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12">
+                <div>
+                    <form class="bg-gray-50 p-8 rounded-xl shadow-md">
+                        <h3 class="text-xl font-semibold mb-6">发送咨询</h3>
+                        
+                        <div class="mb-6">
+                            <label for="name" class="block text-dark font-medium mb-2">姓名</label>
+                            <input type="text" id="name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors" placeholder="请输入您的姓名">
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="org" class="block text-dark font-medium mb-2">单位/机构</label>
+                            <input type="text" id="org" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors" placeholder="请输入您的单位或机构名称">
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="email" class="block text-dark font-medium mb-2">邮箱</label>
+                            <input type="email" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors" placeholder="请输入您的邮箱">
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="message" class="block text-dark font-medium mb-2">咨询内容</label>
+                            <textarea id="message" rows="5" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors" placeholder="请输入您的咨询内容"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="w-full py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
+                            提交咨询
+                        </button>
+                    </form>
+                </div>
+                
+                <div>
+                    <div class="bg-gray-50 h-full p-8 rounded-xl shadow-md">
+                        <h3 class="text-xl font-semibold mb-6">联系方式</h3>
+                        
+                        <div class="space-y-6 mb-8">
+                            <div class="flex items-start">
+                                <div class="mt-1 mr-4 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                                    <i class="fa fa-map-marker"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold mb-1">办公地址</h4>
+                                    <p class="text-dark/70">北京市海淀区中关村南大街5号地球物理研究所</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="mt-1 mr-4 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                                    <i class="fa fa-phone"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold mb-1">联系电话</h4>
+                                    <p class="text-dark/70">技术支持: +86 10 8888 6666</p>
+                                    <p class="text-dark/70">紧急联系: +86 10 8888 6661</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="mt-1 mr-4 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                                    <i class="fa fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold mb-1">电子邮箱</h4>
+                                    <p class="text-dark/70">info@seisd.org</p>
+                                    <p class="text-dark/70">support@seisd.org</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="mt-1 mr-4 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                                    <i class="fa fa-clock"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold mb-1">工作时间</h4>
+                                    <p class="text-dark/70">周一至周五: 9:00 - 18:00</p>
+                                    <p class="text-dark/70">节假日: 24小时应急值守</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold mb-4">关注我们</h4>
+                            <div class="flex space-x-4">
+                                <a href="#" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors">
+                                    <i class="fa fa-weixin"></i>
+                                </a>
+                                <a href="#" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors">
+                                    <i class="fa fa-weibo"></i>
+                                </a>
+                                <a href="#" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors">
+                                    <i class="fa fa-youtube"></i>
+                                </a>
+                                <a href="#" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors">
+                                    <i class="fa fa-github"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-primary text-white py-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <div class="flex items-center space-x-2 mb-6">
+                        <div class="w-10 h-10 rounded-lg bg-white flex items-center justify-center">
+                            <i class="fa fa-waves text-primary text-xl"></i>
+                        </div>
+                        <span class="font-bold text-xl">SeisD</span>
+                    </div>
+                    <p class="text-white/70 mb-6">
+                        地震实时监测系统，为防震减灾提供精准数据支持和决策依据，
+                        守护人民生命财产安全。
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/70 hover:bg-white/20 transition-colors">
+                            <i class="fa fa-weixin"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/70 hover:bg-white/20 transition-colors">
+                            <i class="fa fa-weibo"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/70 hover:bg-white/20 transition-colors">
+                            <i class="fa fa-youtube"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/70 hover:bg-white/20 transition-colors">
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-lg mb-6">快速链接</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#overview" class="text-white/70 hover:text-white transition-colors">系统概述</a></li>
+                        <li><a href="#realtime" class="text-white/70 hover:text-white transition-colors">实时监测</a></li>
+                        <li><a href="#features" class="text-white/70 hover:text-white transition-colors">核心功能</a></li>
+                        <li><a href="#cases" class="text-white/70 hover:text-white transition-colors">预警案例</a></li>
+                        <li><a href="#contact" class="text-white/70 hover:text-white transition-colors">联系我们</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-lg mb-6">资源中心</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors">系统手册</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors">技术文档</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors">地震科普</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors">预警指南</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors">数据共享</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-lg mb-6">紧急联系</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-center">
+                            <i class="fa fa-phone mr-3 text-white/70"></i>
+                            <span class="text-white/70">+86 10 8888 6661</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa fa-envelope mr-3 text-white/70"></i>
+                            <span class="text-white/70">emergency@seisd.org</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa fa-map-marker mr-3 text-white/70"></i>
+                            <span class="text-white/70">全国地震应急热线: 12322</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-white/50 text-sm mb-4 md:mb-0">
+                    &copy; 2023 SeisD地震实时监测系统. 保留所有权利。
+                </p>
+                <div class="flex space-x-6">
+                    <a href="Privacy_policy.html" class="text-white/50 hover:text-white text-sm transition-colors">隐私政策</a>
+                    <a href="about-us.html" class="text-white/50 hover:text-white text-sm transition-colors">关于我们</a>
+                    <a href="#" class="text-white/50 hover:text-white text-sm transition-colors">使用条款</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 移动端菜单切换
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            const icon = menuToggle.querySelector('i');
+            if (icon.classList.contains('fa-bars')) {
+                icon.classList.replace('fa-bars', 'fa-times');
+            } else {
+                icon.classList.replace('fa-times', 'fa-bars');
+            }
+        });
+        
+        // 导航栏滚动效果
+        const navbar = document.getElementById('navbar');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('shadow-lg');
+                navbar.classList.remove('shadow-md');
+            } else {
+                navbar.classList.remove('shadow-lg');
+                navbar.classList.add('shadow-md');
+            }
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                // 关闭移动端菜单
+                if (!mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                    const icon = menuToggle.querySelector('i');
+                    icon.classList.replace('fa-times', 'fa-bars');
+                }
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // 初始化地图
+        document.addEventListener('DOMContentLoaded', function() {
+            // 检查Maplibre是否加载成功
+            if (typeof maplibregl !== 'undefined') {
+                const map = new maplibregl.Map({
+                    container: 'map-container',
+                    style: 'https://api.maptiler.com/maps/streets/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
+                    center: [103.8, 36.0], // 中国中心坐标
+                    zoom: 3.5
+                });
+                
+                // 添加地图控件
+                map.addControl(new maplibregl.NavigationControl());
+                
+                // 地图加载完成后添加地震点
+                map.on('load', function() {
+                    // 模拟地震数据
+                    const earthquakes = [
+                        { lng: 104.93, lat: 28.32, mag: 4.2, time: '2023-06-14 08:23:15' },
+                        { lng: 73.65, lat: 39.87, mag: 3.6, time: '2023-06-13 16:47:02' },
+                        { lng: 121.61, lat: 23.97, mag: 2.8, time: '2023-06-12 22:15:33' },
+                        { lng: 100.12, lat: 25.63, mag: 2.5, time: '2023-06-12 10:08:47' },
+                        { lng: 98.52, lat: 39.75, mag: 3.2, time: '2023-06-11 18:32:19' }
+                    ];
+                    
+                    // 添加地震点
+                    earthquakes.forEach(quake => {
+                        // 根据震级设置颜色
+                        let color = '#3B82F6'; // 蓝色 - 小地震
+                        if (quake.mag >= 5.0) {
+                            color = '#E55039'; // 红色 - 大地震
+                        } else if (quake.mag >= 3.0) {
+                            color = '#F97316'; // 橙色 - 中等地震
+                        }
+                        
+                        // 根据震级设置大小
+                        const size = 8 + (quake.mag * 2);
+                        
+                        // 创建自定义HTML标记
+                        const el = document.createElement('div');
+                        el.className = 'marker';
+                        el.style.width = `${size}px`;
+                        el.style.height = `${size}px`;
+                        el.style.borderRadius = '50%';
+                        el.style.backgroundColor = color;
+                        el.style.border = '2px solid white';
+                        el.style.boxShadow = '0 0 10px rgba(0,0,0,0.3)';
+                        el.style.cursor = 'pointer';
+                        
+                        // 添加脉冲动画效果给较大地震
+                        if (quake.mag >= 4.0) {
+                            el.innerHTML = `<div style="position:absolute;top:-50%;left:-50%;width:200%;height:200%;border-radius:50%;background-color:${color};opacity:0.3;animation:pulse 2s infinite;"></div>`;
+                        }
+                        
+                        // 添加弹出信息
+                        const popup = new maplibregl.Popup({ offset: 25 })
+                            .setHTML(`
+                                <div style="font-weight:bold;">${quake.mag}级地震</div>
+                                <div>时间: ${quake.time}</div>
+                                <div>坐标: ${quake.lat.toFixed(2)}, ${quake.lng.toFixed(2)}</div>
+                            `);
+                        
+                        // 将标记添加到地图
+                        new maplibregl.Marker(el)
+                            .setLngLat([quake.lng, quake.lat])
+                            .setPopup(popup)
+                            .addTo(map);
+                    });
+                });
+            } else {
+                // 如果地图库加载失败，显示静态图片
+                const mapContainer = document.getElementById('map-container');
+                mapContainer.innerHTML = `
+                    <img src="https://picsum.photos/id/101/1200/500" alt="地震监测地图" class="w-full h-full object-cover rounded-xl">
+                    <div class="absolute inset-0 flex items-center justify-center bg-dark/50 text-white">
+                        地图加载失败，请刷新页面重试
+                    </div>
+                `;
+            }
+            
+            // 初始化月度地震统计图表
+            const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+            new Chart(monthlyCtx, {
+                type: 'line',
+                data: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                    datasets: [{
+                        label: '地震次数',
+                        data: [32, 28, 45, 56, 42, 38],
+                        borderColor: '#0A3D62',
+                        backgroundColor: 'rgba(10, 61, 98, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '地震次数'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 初始化震级分布图表
+            const magnitudeCtx = document.getElementById('magnitudeChart').getContext('2d');
+            new Chart(magnitudeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['M < 2.0', '2.0 ≤ M < 3.0', '3.0 ≤ M < 4.0', '4.0 ≤ M < 5.0', 'M ≥ 5.0'],
+                    datasets: [{
+                        data: [65, 20, 10, 3, 2],
+                        backgroundColor: [
+                            '#90CDF4', // 浅蓝色
+                            '#60A5FA', // 蓝色
+                            '#3B82F6', // 中蓝色
+                            '#F97316', // 橙色
+                            '#E55039'  // 红色
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+            
+            // 更新最后更新时间
+            function updateLastUpdateTime() {
+                const now = new Date();
+                const formatted = now.toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                }).replace(',', '');
+                document.getElementById('last-update').textContent = formatted;
+            }
+            
+            // 初始更新并设置定时器
+            updateLastUpdateTime();
+            setInterval(updateLastUpdateTime, 10000); // 每10秒更新一次
+            
+            // 波浪动画效果
+            const waveAnimation = document.getElementById('wave-animation');
+            if (waveAnimation) {
+                for (let i = 0; i < 3; i++) {
+                    const wave = document.createElement('div');
+                    wave.style.position = 'absolute';
+                    wave.style.bottom = '0';
+                    wave.style.left = '0';
+                    wave.style.width = '200%';
+                    wave.style.height = `${30 + i * 20}px`;
+                    wave.style.background = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='rgba(255,255,255,0.5)' fill-opacity='1' d='M0,128L48,144C96,160,192,192,288,197.3C384,203,480,181,576,181.3C672,181,768,203,864,197.3C960,192,1056,160,1152,138.7C1248,117,1344,107,1392,101.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E") repeat-x`;
+                    wave.style.backgroundSize = '1000px 100px';
+                    wave.style.animation = `wave ${20 + i * 10}s linear infinite`;
+                    wave.style.transform = `translateX(-${i * 20}%)`;
+                    waveAnimation.appendChild(wave);
+                }
+                
+                // 添加波浪动画样式
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes wave {
+                        0% { transform: translateX(0) translateY(0); }
+                        50% { transform: translateX(-25%) translateY(${Math.random() * 10}px); }
+                        100% { transform: translateX(-50%) translateY(0); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        });
+        
+        // 滚动动画
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+        
+        // 监听所有section中的主要内容块
+        document.querySelectorAll('section > div > div:not(.text-center)').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
+    

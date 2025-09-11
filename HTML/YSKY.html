@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>云凇科研 - 地震学与月震学研究平台</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="云凇科研 - 致力于地震学及月震学相关科研内容的分享与讨论，推动地球与行星内部结构研究发展">
+    
+    <!-- 外部资源 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',      // 主色调：专业蓝
+                        secondary: '#36BFFA',    // 辅助色：亮蓝
+                        accent: '#FF7D00',       // 强调色：橙色（用于突出重要信息）
+                        dark: '#1D2939',         // 深色文本
+                        light: '#F9FAFB',        // 浅色背景
+                        'gray-medium': '#667085' // 中等灰度
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .bg-gradient-primary {
+                background: linear-gradient(135deg, #165DFF 0%, #36BFFA 100%);
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+            }
+            .section-padding {
+                @apply py-16 md:py-24;
+            }
+            .wave-animation {
+                animation: wave 8s ease-in-out infinite alternate;
+            }
+        }
+        
+        @keyframes wave {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-10px) scale(1.02); }
+        }
+        
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+    </style>
+</head>
+
+<body class="font-sans bg-light text-dark antialiased">
+    <!-- 导航栏 -->
+    <header id="navbar" class="fixed w-full bg-white/95 backdrop-blur-sm shadow-sm z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 md:h-20">
+                <!-- Logo -->
+                <a href="#" class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center">
+                        <i class="fa fa-waves text-white text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold tracking-tight">云凇科研</span>
+                </a>
+                
+                <!-- 桌面端导航 -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="text-primary font-medium">首页</a>
+                    <a href="#research" class="text-dark/70 hover:text-primary transition-colors">研究领域</a>
+                    <a href="#resources" class="text-dark/70 hover:text-primary transition-colors">资源下载</a>
+                    <a href="#publications" class="text-dark/70 hover:text-primary transition-colors">科研成果</a>
+                    <a href="#team" class="text-dark/70 hover:text-primary transition-colors">研究团队</a>
+                    <a href="#contact" class="text-dark/70 hover:text-primary transition-colors">联系我们</a>
+                </nav>
+                
+                <!-- 移动端菜单按钮 -->
+                <button id="menu-toggle" class="md:hidden text-dark hover:text-primary transition-colors">
+                    <i class="fa fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 移动端导航菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t shadow-md">
+            <div class="container mx-auto px-4 py-3 space-y-3">
+                <a href="#home" class="block py-2 text-primary font-medium">首页</a>
+                <a href="#research" class="block py-2 text-dark/70 hover:text-primary transition-colors">研究领域</a>
+                <a href="#resources" class="block py-2 text-dark/70 hover:text-primary transition-colors">资源下载</a>
+                <a href="#publications" class="block py-2 text-dark/70 hover:text-primary transition-colors">科研成果</a>
+                <a href="#team" class="block py-2 text-dark/70 hover:text-primary transition-colors">研究团队</a>
+                <a href="#contact" class="block py-2 text-dark/70 hover:text-primary transition-colors">联系我们</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 英雄区域 -->
+    <section id="home" class="pt-20 md:pt-0 min-h-screen flex items-center relative overflow-hidden">
+        <!-- 背景装饰 -->
+        <div class="absolute inset-0 z-0">
+            <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5"></div>
+            <div class="absolute bottom-0 left-0 w-full h-1/2 bg-[url('https://picsum.photos/id/1015/1920/1080')] bg-cover bg-center opacity-5"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-0 relative z-10">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="order-2 md:order-1">
+                    <div class="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium mb-6 animate-fade-in">
+                        专注地震学与月震学研究
+                    </div>
+                    <h1 class="text-[clamp(2.2rem,5vw,3.5rem)] font-bold leading-tight mb-6 text-shadow">
+                        探索地球与月球的<br>
+                        <span class="text-primary">内部振动奥秘</span>
+                    </h1>
+                    <p class="text-lg text-dark/70 mb-8 max-w-lg">
+                        云凇科研致力于地震学及月震学相关科研内容的分享与讨论，
+                        推动地球与行星内部结构研究的发展与创新。
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="#resources" class="px-8 py-3.5 bg-gradient-primary text-white rounded-lg font-medium hover:shadow-lg hover:shadow-primary/20 transition-all text-center">
+                            探索资源 <i class="fa fa-arrow-right ml-2"></i>
+                        </a>
+                        <a href="#research" class="px-8 py-3.5 bg-white text-dark border border-gray-200 rounded-lg font-medium hover:border-primary hover:text-primary transition-all text-center">
+                            研究领域
+                        </a>
+                    </div>
+                    
+                    <!-- 数据统计 -->
+                    <div class="grid grid-cols-3 gap-4 mt-12">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-primary mb-1">50+</div>
+                            <div class="text-sm text-dark/60">研究项目</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-primary mb-1">120+</div>
+                            <div class="text-sm text-dark/60">学术论文</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-primary mb-1">30+</div>
+                            <div class="text-sm text-dark/60">合作机构</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="order-1 md:order-2 relative">
+                    <div class="relative z-10 rounded-2xl overflow-hidden shadow-xl wave-animation">
+                        <img src="https://picsum.photos/id/1019/800/600" alt="地震波形与地质研究" class="w-full h-auto">
+                    </div>
+                    <!-- 装饰元素 -->
+                    <div class="absolute -top-6 -right-6 w-32 h-32 bg-accent/10 rounded-full blur-2xl"></div>
+                    <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 滚动指示器 -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <a href="#research" class="text-primary/60 hover:text-primary transition-colors">
+                <i class="fa fa-chevron-down text-2xl"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- 研究领域 -->
+    <section id="research" class="section-padding bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">研究领域</h2>
+                <div class="w-20 h-1 bg-primary mx-auto mb-6"></div>
+                <p class="text-dark/70 max-w-2xl mx-auto">
+                    我们专注于地震学与月震学的前沿研究，探索地球与月球内部结构和动力学过程
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 研究方向1 -->
+                <div class="bg-light rounded-xl p-8 shadow-sm card-hover border border-gray-100">
+                    <div class="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-2xl mb-6">
+                        <i class="fa fa-earth-americas"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">天然地震学</h3>
+                    <p class="text-dark/70 mb-4">
+                        研究天然地震的成因、机制与传播规律，分析地震波形数据，
+                        探索地球内部结构和动力学过程，为地震预测和防灾减灾提供科学依据。
+                    </p>
+                    <a href="#" class="text-primary hover:text-primary/80 font-medium flex items-center transition-colors">
+                        了解更多 <i class="fa fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+                
+                <!-- 研究方向2 -->
+                <div class="bg-light rounded-xl p-8 shadow-sm card-hover border border-gray-100">
+                    <div class="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-2xl mb-6">
+                        <i class="fa fa-moon"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">月震学研究</h3>
+                    <p class="text-dark/70 mb-4">
+                        基于月球探测器获取的月震数据，研究月球内部结构、月震活动规律，
+                        探索月球的演化历史和当前的动力学状态，为月球探测任务提供科学支持。
+                    </p>
+                    <a href="#" class="text-primary hover:text-primary/80 font-medium flex items-center transition-colors">
+                        了解更多 <i class="fa fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+                
+                <!-- 研究方向3 -->
+                <div class="bg-light rounded-xl p-8 shadow-sm card-hover border border-gray-100">
+                    <div class="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-2xl mb-6">
+                        <i class="fa fa-wave-square"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">地震波形分析</h3>
+                    <p class="text-dark/70 mb-4">
+                        开发先进的地震波形分析算法，研究地震波的传播特性，
+                        提高地震定位和震源机制解的精度，为地震监测和研究提供技术支持。
+                    </p>
+                    <a href="#" class="text-primary hover:text-primary/80 font-medium flex items-center transition-colors">
+                        了解更多 <i class="fa fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+                
+                <!-- 研究方向4 -->
+                <div class="bg-light rounded-xl p-8 shadow-sm card-hover border border-gray-100">
+                    <div class="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-2xl mb-6">
+                        <i class="fa fa-globe-americas"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">地球内部结构</h3>
+                    <p class="text-dark/70 mb-4">
+                        利用地震波层析成像等技术，研究地球内部的三维结构，
+                        探索地幔对流、板块运动等地球动力学过程，揭示地球的演化历史。
+                    </p>
+                    <a href="#" class="text-primary hover:text-primary/80 font-medium flex items-center transition-colors">
+                        了解更多 <i class="fa fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+                
+                <!-- 研究方向5 -->
+                <div class="bg-light rounded-xl p-8 shadow-sm card-hover border border-gray-100">
+                    <div class="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-2xl mb-6">
+                        <i class="fa fa-bolt"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">地震预警系统</h3>
+                    <p class="text-dark/70 mb-4">
+                        研发高效的地震预警算法和系统，实现地震发生后快速发布预警信息，
+                        为震区居民和重要设施争取应急响应时间，减轻地震灾害损失。
+                    </p>
+                    <a href="#" class="text-primary hover:text-primary/80 font-medium flex items-center transition-colors">
+                        了解更多 <i class="fa fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+                
+                <!-- 研究方向6 -->
+                <div class="bg-light rounded-xl p-8 shadow-sm card-hover border border-gray-100">
+                    <div class="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-2xl mb-6">
+                        <i class="fa fa-code"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">地震数据处理算法</h3>
+                    <p class="text-dark/70 mb-4">
+                        开发创新的地震数据处理和分析算法，提高地震数据的信噪比和分辨率，
+                        为地震学研究提供更精确的数据基础和分析工具。
+                    </p>
+                    <a href="#" class="text-primary hover:text-primary/80 font-medium flex items-center transition-colors">
+                        了解更多 <i class="fa fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 资源下载 -->
+    <section id="resources" class="section-padding bg-gray-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">资源下载</h2>
+                <div class="w-20 h-1 bg-primary mx-auto mb-6"></div>
+                <p class="text-dark/70 max-w-2xl mx-auto">
+                    提供地震学与月震学研究相关的代码、文档、数据和软件工具，助力科研工作开展
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 代码区 -->
+                <a href="Codes.html" target="_blank" class="block">
+                    <div class="bg-white rounded-xl p-6 text-center shadow-sm card-hover h-full border border-gray-100">
+                        <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary text-2xl mx-auto mb-6">
+                            <i class="fa fa-code"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-2">代码区</h3>
+                        <p class="text-dark/60 text-sm">
+                            地震数据处理、波形分析、成像算法等相关代码库和脚本
+                        </p>
+                        <div class="mt-6 text-primary font-medium text-sm">
+                            访问资源库 <i class="fa fa-external-link ml-1"></i>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- 文档区 -->
+                <a href="Documents.html" target="_blank" class="block">
+                    <div class="bg-white rounded-xl p-6 text-center shadow-sm card-hover h-full border border-gray-100">
+                        <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary text-2xl mx-auto mb-6">
+                            <i class="fa fa-file-text"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-2">文档区</h3>
+                        <p class="text-dark/60 text-sm">
+                            研究报告、技术文档、用户手册、教程等各类文档资料
+                        </p>
+                        <div class="mt-6 text-primary font-medium text-sm">
+                            访问资源库 <i class="fa fa-external-link ml-1"></i>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- 视频区 -->
+                <a href="Videos.html" target="_blank" class="block">
+                    <div class="bg-white rounded-xl p-6 text-center shadow-sm card-hover h-full border border-gray-100">
+                        <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary text-2xl mx-auto mb-6">
+                            <i class="fa fa-video"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-2">视频区</h3>
+                        <p class="text-dark/60 text-sm">
+                            学术讲座、技术培训、软件操作演示等视频资源
+                        </p>
+                        <div class="mt-6 text-primary font-medium text-sm">
+                            访问资源库 <i class="fa fa-external-link ml-1"></i>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- 软件区 -->
+                <a href="Software.html" target="_blank" class="block">
+                    <div class="bg-white rounded-xl p-6 text-center shadow-sm card-hover h-full border border-gray-100">
+                        <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary text-2xl mx-auto mb-6">
+                            <i class="fa fa-download"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-2">软件区</h3>
+                        <p class="text-dark/60 text-sm">
+                            地震数据处理软件、可视化工具、分析平台等应用程序
+                        </p>
+                        <div class="mt-6 text-primary font-medium text-sm">
+                            访问资源库 <i class="fa fa-external-link ml-1"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
+            <!-- 热门资源 -->
+            <div class="mt-16">
+                <h3 class="text-xl font-semibold mb-8 text-center">热门资源推荐</h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- 资源1 -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover border border-gray-100">
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mr-3">
+                                        <i class="fa fa-code"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium">地震波形分析工具箱</h4>
+                                        <p class="text-dark/60 text-sm">Python · 2.5k 下载</p>
+                                    </div>
+                                </div>
+                                <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded">最新</span>
+                            </div>
+                            <p class="text-dark/70 text-sm mb-4">
+                                一套用于地震波形数据处理和分析的Python工具库，包含滤波、频谱分析、震相识别等功能。
+                            </p>
+                            <a href="#" class="inline-flex items-center px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm font-medium hover:bg-primary/20 transition-colors">
+                                <i class="fa fa-download mr-2"></i> 下载
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- 资源2 -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover border border-gray-100">
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mr-3">
+                                        <i class="fa fa-file-text"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium">月震数据分析指南</h4>
+                                        <p class="text-dark/60 text-sm">PDF · 1.8k 下载</p>
+                                    </div>
+                                </div>
+                                <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">推荐</span>
+                            </div>
+                            <p class="text-dark/70 text-sm mb-4">
+                                详细介绍月震数据的处理方法和分析流程，包含实例分析和代码实现，适合初学者入门。
+                            </p>
+                            <a href="#" class="inline-flex items-center px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm font-medium hover:bg-primary/20 transition-colors">
+                                <i class="fa fa-download mr-2"></i> 下载
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- 资源3 -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover border border-gray-100">
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mr-3">
+                                        <i class="fa fa-desktop"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium">地震数据可视化软件</h4>
+                                        <p class="text-dark/60 text-sm">Windows · 3.2k 下载</p>
+                                    </div>
+                                </div>
+                                <span class="bg-orange-100 text-orange-700 text-xs px-2 py-1 rounded">热门</span>
+                            </div>
+                            <p class="text-dark/70 text-sm mb-4">
+                                专业的地震数据可视化软件，支持多种数据格式，可生成地震波形图、震中分布图等。
+                            </p>
+                            <a href="#" class="inline-flex items-center px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm font-medium hover:bg-primary/20 transition-colors">
+                                <i class="fa fa-download mr-2"></i> 下载
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 科研成果 -->
+    <section id="publications" class="section-padding bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">科研成果</h2>
+                <div class="w-20 h-1 bg-primary mx-auto mb-6"></div>
+                <p class="text-dark/70 max-w-2xl mx-auto">
+                    展示我们在地震学与月震学领域的最新研究成果和学术论文
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+                <!-- 论文图表 -->
+                <div class="bg-light rounded-xl p-6 shadow-sm border border-gray-100">
+                    <h3 class="text-lg font-semibold mb-6">近年发表论文统计</h3>
+                    <canvas id="publicationsChart" height="300"></canvas>
+                </div>
+                
+                <!-- 研究亮点 -->
+                <div class="bg-light rounded-xl p-6 shadow-sm border border-gray-100">
+                    <h3 class="text-lg font-semibold mb-6">研究亮点</h3>
+                    <div class="space-y-6">
+                        <div class="flex">
+                            <div class="flex-shrink-0 w-1 bg-primary rounded-full mr-4"></div>
+                            <div>
+                                <h4 class="font-medium mb-1">月球内部结构新发现</h4>
+                                <p class="text-dark/70 text-sm">
+                                    通过分析月震数据，我们发现月球内部存在一个比之前认为更大的液态外核，
+                                    这一发现为理解月球的演化历史提供了新的线索。
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex">
+                            <div class="flex-shrink-0 w-1 bg-primary rounded-full mr-4"></div>
+                            <div>
+                                <h4 class="font-medium mb-1">高精度地震定位算法</h4>
+                                <p class="text-dark/70 text-sm">
+                                    开发了一种基于机器学习的高精度地震定位算法，定位误差降低了30%，
+                                    显著提高了小震活动的监测能力。
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex">
+                            <div class="flex-shrink-0 w-1 bg-primary rounded-full mr-4"></div>
+                            <div>
+                                <h4 class="font-medium mb-1">地震预警系统优化</h4>
+                                <p class="text-dark/70 text-sm">
+                                    提出了一种新的地震预警参数快速估算方法，将预警响应时间缩短了1.5秒，
+                                    提高了预警系统的实用性和可靠性。
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex">
+                            <div class="flex-shrink-0 w-1 bg-primary rounded-full mr-4"></div>
+                            <div>
+                                <h4 class="font-medium mb-1">地球内核各向异性研究</h4>
+                                <p class="text-dark/70 text-sm">
+                                    基于全球地震台网数据，揭示了地球内核的复杂各向异性结构，
+                                    为研究地球内部动力学过程提供了新的约束条件。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 最新论文 -->
+            <div>
+                <h3 class="text-lg font-semibold mb-6">最新发表论文</h3>
+                <div class="space-y-6">
+                    <!-- 论文1 -->
+                    <div class="bg-light rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-100">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-3">
+                            <h4 class="font-semibold mb-2 md:mb-0">月球内部结构的三维成像研究</h4>
+                            <span class="text-sm text-dark/60">Earth and Planetary Science Letters, 2023</span>
+                        </div>
+                        <p class="text-dark/70 text-sm mb-4">
+                            Zhang L., Wang Y., Li J., et al. (2023). 基于嫦娥五号月震数据的月球内部结构精细成像，
+                            揭示了月球幔部的横向不均匀性和内核的物理状态。
+                        </p>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">月震学</span>
+                            <span class="text-xs bg-gray-100 text-dark/60 px-2 py-1 rounded-full">月球内部结构</span>
+                            <span class="text-xs bg-gray-100 text-dark/60 px-2 py-1 rounded-full">三维成像</span>
+                            <a href="#" class="ml-auto text-primary text-sm hover:underline">查看全文</a>
+                        </div>
+                    </div>
+                    
+                    <!-- 论文2 -->
+                    <div class="bg-light rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-100">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-3">
+                            <h4 class="font-semibold mb-2 md:mb-0">基于深度学习的地震相位自动识别算法</h4>
+                            <span class="text-sm text-dark/60">Geophysical Journal International, 2023</span>
+                        </div>
+                        <p class="text-dark/70 text-sm mb-4">
+                            Chen W., Liu H., Zhang Q., et al. (2023). 提出了一种基于Transformer的地震相位自动识别方法，
+                            在全球多个地震台网数据上的测试表明，该方法的识别精度和效率均优于现有方法。
+                        </p>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">地震学</span>
+                            <span class="text-xs bg-gray-100 text-dark/60 px-2 py-1 rounded-full">深度学习</span>
+                            <span class="text-xs bg-gray-100 text-dark/60 px-2 py-1 rounded-full">相位识别</span>
+                            <a href="#" class="ml-auto text-primary text-sm hover:underline">查看全文</a>
+                        </div>
+                    </div>
+                    
+                    <!-- 论文3 -->
+                    <div class="bg-light rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-100">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-3">
+                            <h4 class="font-semibold mb-2 md:mb-0">华北地区地壳介质各向异性及其动力学意义</h4>
+                            <span class="text-sm text-dark/60">Chinese Journal of Geophysics, 2022</span>
+                        </div>
+                        <p class="text-dark/70 text-sm mb-4">
+                            Wang X., Zhao D., Sun Y., et al. (2022). 利用接收函数方法研究了华北地区地壳介质的各向异性特征，
+                            探讨了其与区域构造演化和现今构造活动的关系。
+                        </p>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">地震学</span>
+                            <span class="text-xs bg-gray-100 text-dark/60 px-2 py-1 rounded-full">地壳各向异性</span>
+                            <span class="text-xs bg-gray-100 text-dark/60 px-2 py-1 rounded-full">华北地区</span>
+                            <a href="#" class="ml-auto text-primary text-sm hover:underline">查看全文</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-8">
+                    <a href="#" class="inline-flex items-center px-6 py-3 bg-white text-primary border border-primary rounded-lg font-medium hover:bg-primary/5 transition-colors">
+                        查看更多论文 <i class="fa fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 研究团队 -->
+    <section id="team" class="section-padding bg-gray-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">研究团队</h2>
+                <div class="w-20 h-1 bg-primary mx-auto mb-6"></div>
+                <p class="text-dark/70 max-w-2xl mx-auto">
+                    由地震学、月震学、地球物理学等领域的专家组成的研究团队，致力于推动相关领域的科学研究
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 团队成员1 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/1005/400/500" alt="张明 - 教授" class="w-full h-64 object-cover object-center">
+                        <div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/70 to-transparent">
+                            <h3 class="text-white font-semibold">张明</h3>
+                            <p class="text-white/80 text-sm">教授 · 团队负责人</p>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <p class="text-dark/70 text-sm mb-4">
+                            主要研究方向为地震层析成像和地球内部结构，主持多项国家级科研项目，发表学术论文50余篇。
+                        </p>
+                        <div class="flex space-x-3">
+                            <a href="#" class="text-dark/50 hover:text-primary transition-colors">
+                                <i class="fa fa-envelope"></i>
+                            </a>
+                            <a href="#" class="text-dark/50 hover:text-primary transition-colors">
+                                <i class="fa fa-globe"></i>
+                            </a>
+                            <a href="#" class="text-dark/50 hover:text-primary transition-colors">
+                                <i class="fa fa-researchgate"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 团队成员2 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/1000/400/500" alt="李华 - 副教授" class="w-full h-64 object-cover object-center">
+                        <div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/70 to-transparent">
+                            <h3 class="text-white font-semibold">李华</h3>
+                            <p class="text-white/80 text-sm">副教授 · 月震学研究组</p>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <p class="text-dark/70 text-sm mb-4">
+                            专注于月震学和行星地震学研究，参与嫦娥探月工程相关研究项目，在月球内部结构研究领域有重要成果。
+                        </p>
+                        <div class="flex space-x-3">
+                            <a href="#" class="text-dark/50 hover:text-primary transition-colors">
+                                <i class="fa fa-envelope"></i>
+                            </a>
+                            <a href="#" class="text-dark/50 hover:text-primary transition-colors">
+                                <i class="fa fa-globe"></i>
+                            </a>
+                            <a href="#" class="text-dark/50 hover:text-primary transition-colors">
+                                <i class="fa fa-researchgate"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 团队成员3 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/1012/400/500" alt="王静 - 副教授" class="w-full h-64 object-cover object-center">
+                        <div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/70 to-transparent">
+                            <h3 class="text-white font-semibold">王静</h3>
+                            <p class="text-white/80 text-sm">副教授 · 地震预警研究组</p>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <p class="text-dark/70 text-sm mb-4">
+                            研究方向为地震预警理论与方法，地震应急响应，开发了多种地震预警算法，应用于多个实际预警系统。
+                        </p>
+                        <div class="flex space-x-3">
+                            <a href="#" class="text-dark/50 hover:text-primary transition-colors">
+                                <i class="fa fa-envelope"></i>
+                            </a>
+                            <a href="#" class="text-dark/50 hover:text-primary transition-colors">
+                                <i class="fa fa-globe"></i>
+                            </a>
+                            <a href="#" class="text-dark/50 hover:text-primary transition-colors">
+                                <i class="fa fa-researchgate"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 团队成员4 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/1025/400/500" alt="赵强 - 助理研究员" class="w-full h-64 object-cover object-center">
+                        <div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/70 to-transparent">
+                            <h3 class="text-white font-semibold">赵强</h3>
+                            <p class="text-white/80 text-sm">助理研究员 · 数据科学组</p>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <p class="text-dark/70 text-sm mb-4">
+                            专注于地震数据处理算法和机器学习在地震学中的应用，开发了多个地震数据分析和可视化工具。
+                        </p>
+                        <div class="flex space-x-3">
+                            <a href="#" class="text-dark/50 hover:text-primary transition-colors">
+                                <i class="fa fa-envelope"></i>
+                            </a>
+                            <a href="#" class="text-dark/50 hover:text-primary transition-colors">
+                                <i class="fa fa-globe"></i>
+                            </a>
+                            <a href="#" class="text-dark/50 hover:text-primary transition-colors">
+                                <i class="fa fa-researchgate"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 合作机构 -->
+            <div class="mt-20">
+                <h3 class="text-xl font-semibold mb-8 text-center">合作机构</h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center justify-items-center">
+                    <div class="grayscale hover:grayscale-0 transition-all opacity-70 hover:opacity-100">
+                        <img src="https://picsum.photos/id/102/200/80" alt="合作机构1" class="h-12 object-contain">
+                    </div>
+                    <div class="grayscale hover:grayscale-0 transition-all opacity-70 hover:opacity-100">
+                        <img src="https://picsum.photos/id/103/200/80" alt="合作机构2" class="h-12 object-contain">
+                    </div>
+                    <div class="grayscale hover:grayscale-0 transition-all opacity-70 hover:opacity-100">
+                        <img src="https://picsum.photos/id/104/200/80" alt="合作机构3" class="h-12 object-contain">
+                    </div>
+                    <div class="grayscale hover:grayscale-0 transition-all opacity-70 hover:opacity-100">
+                        <img src="https://picsum.photos/id/105/200/80" alt="合作机构4" class="h-12 object-contain">
+                    </div>
+                    <div class="grayscale hover:grayscale-0 transition-all opacity-70 hover:opacity-100">
+                        <img src="https://picsum.photos/id/106/200/80" alt="合作机构5" class="h-12 object-contain">
+                    </div>
+                    <div class="grayscale hover:grayscale-0 transition-all opacity-70 hover:opacity-100">
+                        <img src="https://picsum.photos/id/107/200/80" alt="合作机构6" class="h-12 object-contain">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 联系我们 -->
+    <section id="contact" class="section-padding bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">联系我们</h2>
+                <div class="w-20 h-1 bg-primary mx-auto mb-6"></div>
+                <p class="text-dark/70 max-w-2xl mx-auto">
+                    如有任何问题或合作意向，请通过以下方式与我们联系
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12">
+                <div>
+                    <form class="bg-light p-8 rounded-xl shadow-sm border border-gray-100">
+                        <h3 class="text-xl font-semibold mb-6">发送消息</h3>
+                        
+                        <div class="mb-6">
+                            <label for="contact-name" class="block text-dark font-medium mb-2">姓名</label>
+                            <input type="text" id="contact-name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors" placeholder="请输入您的姓名">
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="contact-email" class="block text-dark font-medium mb-2">邮箱</label>
+                            <input type="email" id="contact-email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors" placeholder="请输入您的邮箱">
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="contact-subject" class="block text-dark font-medium mb-2">主题</label>
+                            <input type="text" id="contact-subject" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors" placeholder="请输入消息主题">
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="contact-message" class="block text-dark font-medium mb-2">消息内容</label>
+                            <textarea id="contact-message" rows="5" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors" placeholder="请输入您的消息内容"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="w-full py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors shadow-lg shadow-primary/10">
+                            发送消息
+                        </button>
+                    </form>
+                </div>
+                
+                <div>
+                    <div class="bg-light h-full p-8 rounded-xl shadow-sm border border-gray-100">
+                        <h3 class="text-xl font-semibold mb-6">联系方式</h3>
+                        
+                        <div class="space-y-6 mb-8">
+                            <div class="flex items-start">
+                                <div class="mt-1 mr-4 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                                    <i class="fa fa-map-marker"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold mb-1">办公地址</h4>
+                                    <p class="text-dark/70">北京市海淀区学院路30号地球科学大厦5层</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="mt-1 mr-4 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                                    <i class="fa fa-phone"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold mb-1">联系电话</h4>
+                                    <p class="text-dark/70">010-12345678</p>
+                                    <p class="text-dark/70">010-12345679</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="mt-1 mr-4 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                                    <i class="fa fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold mb-1">电子邮箱</h4>
+                                    <p class="text-dark/70">contact@yunsong-research.org</p>
+                                    <p class="text-dark/70">info@yunsong-research.org</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="mt-1 mr-4 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                                    <i class="fa fa-clock-o"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold mb-1">工作时间</h4>
+                                    <p class="text-dark/70">周一至周五: 9:00 - 17:30</p>
+                                    <p class="text-dark/70">周六、周日及法定节假日休息</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold mb-4">关注我们</h4>
+                            <div class="flex space-x-4">
+                                <a href="#" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors">
+                                    <i class="fa fa-weixin"></i>
+                                </a>
+                                <a href="#" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors">
+                                    <i class="fa fa-weibo"></i>
+                                </a>
+                                <a href="#" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors">
+                                    <i class="fa fa-github"></i>
+                                </a>
+                                <a href="#" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors">
+                                    <i class="fa fa-youtube"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="w-10 h-10 rounded-lg bg-white flex items-center justify-center">
+                            <i class="fa fa-waves text-primary text-xl"></i>
+                        </div>
+                        <span class="text-xl font-bold tracking-tight">云凇科研</span>
+                    </div>
+                    <p class="text-white/70 mb-6">
+                        致力于地震学及月震学相关科研内容的分享与讨论，
+                        推动地球与行星内部结构研究的发展与创新。
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/70 hover:bg-primary transition-colors">
+                            <i class="fa fa-weixin"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/70 hover:bg-primary transition-colors">
+                            <i class="fa fa-weibo"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/70 hover:bg-primary transition-colors">
+                            <i class="fa fa-github"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/70 hover:bg-primary transition-colors">
+                            <i class="fa fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-lg mb-6">快速链接</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#home" class="text-white/70 hover:text-white transition-colors">首页</a></li>
+                        <li><a href="#research" class="text-white/70 hover:text-white transition-colors">研究领域</a></li>
+                        <li><a href="#resources" class="text-white/70 hover:text-white transition-colors">资源下载</a></li>
+                        <li><a href="#publications" class="text-white/70 hover:text-white transition-colors">科研成果</a></li>
+                        <li><a href="#team" class="text-white/70 hover:text-white transition-colors">研究团队</a></li>
+                        <li><a href="#contact" class="text-white/70 hover:text-white transition-colors">联系我们</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-lg mb-6">资源中心</h4>
+                    <ul class="space-y-3">
+                        <li><a href="Codes.html" target="_blank" class="text-white/70 hover:text-white transition-colors">代码库</a></li>
+                        <li><a href="Documents.html" target="_blank" class="text-white/70 hover:text-white transition-colors">文档资料</a></li>
+                        <li><a href="Videos.html" target="_blank" class="text-white/70 hover:text-white transition-colors">视频教程</a></li>
+                        <li><a href="Software.html" target="_blank" class="text-white/70 hover:text-white transition-colors">软件工具</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors">数据共享</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors">常见问题</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-lg mb-6">合作链接</h4>
+                    <ul class="space-y-3">
+                        <li><a href="https://c.runoob.com/" target="_blank" rel="noopener" class="text-white/70 hover:text-white transition-colors">菜鸟工具</a></li>
+                        <li><a href="https://gmt-china.org/#" target="_blank" rel="noopener" class="text-white/70 hover:text-white transition-colors">GMT中文社区</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors">国家地震科学数据中心</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors">中国地震局</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors">国际地震中心</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors">美国地质调查局</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-white/50 text-sm mb-4 md:mb-0">
+                    &copy; 2023 云凇科研. 保留所有权利。
+                </p>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-white/50 hover:text-white text-sm transition-colors">隐私政策</a>
+                    <a href="#" class="text-white/50 hover:text-white text-sm transition-colors">使用条款</a>
+                    <a href="#" class="text-white/50 hover:text-white text-sm transition-colors">网站地图</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 移动端菜单切换
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            const icon = menuToggle.querySelector('i');
+            if (icon.classList.contains('fa-bars')) {
+                icon.classList.replace('fa-bars', 'fa-times');
+            } else {
+                icon.classList.replace('fa-times', 'fa-bars');
+            }
+        });
+        
+        // 导航栏滚动效果
+        const navbar = document.getElementById('navbar');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('shadow-md');
+                navbar.classList.remove('shadow-sm');
+            } else {
+                navbar.classList.remove('shadow-md');
+                navbar.classList.add('shadow-sm');
+            }
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                // 关闭移动端菜单
+                if (!mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                    const icon = menuToggle.querySelector('i');
+                    icon.classList.replace('fa-times', 'fa-bars');
+                }
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // 初始化论文统计图表
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('publicationsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['2018', '2019', '2020', '2021', '2022', '2023'],
+                    datasets: [
+                        {
+                            label: 'SCI论文',
+                            data: [8, 12, 15, 18, 22, 25],
+                            backgroundColor: '#165DFF',
+                        },
+                        {
+                            label: '核心期刊',
+                            data: [12, 15, 18, 20, 25, 28],
+                            backgroundColor: '#36BFFA',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            stacked: true,
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '论文数量'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 添加滚动动画
+            const animateOnScroll = () => {
+                const elements = document.querySelectorAll('.card-hover');
+                
+                elements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const elementVisible = 150;
+                    
+                    if (elementTop < window.innerHeight - elementVisible) {
+                        element.classList.add('animate-fade-in');
+                    }
+                });
+            };
+            
+            // 初始检查和滚动监听
+            window.addEventListener('scroll', animateOnScroll);
+            animateOnScroll(); // 初始检查
+        });
+    </script>
+</body>
+</html>

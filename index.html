@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>云凇之家</title>
+  <!-- 引入外部资源 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <!-- <link href="YS.css" rel="stylesheet"> -->
+  <link rel="icon" href="images/YSZJ_logo_orange.ico" type="image/x-icon">
+  <!-- 配置Tailwind -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36CFC9',
+            dark: '#1D2129',
+            light: '#F2F3F5'
+          },
+          fontFamily: {
+            inter: ['Inter', 'sans-serif'],
+          },
+          // 添加动画配置
+          keyframes: {
+            pulseSlow: {
+              '0%, 100%': { transform: 'scale(1)' },
+              '50%': { transform: 'scale(1.05)' }
+            }
+          },
+          animation: {
+            'pulse-slow': 'pulseSlow 4s infinite ease-in-out'
+          }
+        },
+      }
+    }
+  </script>
+
+  <style type="text/tailwindcss">
+    @layer utilities {
+      /* 自定义工具类 */
+      .content-auto {
+        content-visibility: auto;
+      }
+      .text-shadow {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .bg-gradient-tech {
+        background: linear-gradient(135deg, #1D2129 0%, #2B303A 100%);
+      }
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(22, 93, 255, 0.1), 0 8px 10px -6px rgba(22, 93, 255, 0.1);
+      }
+    }
+  </style>
+</head>
+
+<body class="font-inter bg-dark text-light antialiased">
+  <!-- 导航栏 - 固定顶部并在滚动时变化 -->
+  <header id="navbar" class="fixed w-full z-50 transition-all duration-300 py-4">
+    <div class="container mx-auto px-4 md:px-6">
+      <nav class="flex items-center justify-between">
+        <!-- 网站Logo -->
+        <a href="#" class="text-2xl font-bold text-white flex items-center">
+          <span class="text-primary mr-1"><i class="fa fa-home"></i></span>
+          <span>云凇之家</span>
+        </a>
+        
+        <!-- 桌面端导航 -->
+        <ul class="hidden md:flex items-center space-x-8">
+          <li><a href="#home" class="hover:text-primary transition-colors">首页</a></li>
+          <li><a href="#about" class="hover:text-primary transition-colors">关于我</a></li>
+          <li><a href="#skills" class="hover:text-primary transition-colors">技能</a></li>
+          <li><a href="#projects" class="hover:text-primary transition-colors">项目</a></li>
+          <li><a href="#contact" class="hover:text-primary transition-colors">联系我</a></li>
+        </ul>
+        
+        <!-- 移动端汉堡菜单 -->
+        <button id="menu-toggle" class="md:hidden text-white text-xl">
+          <i class="fa fa-bars"></i>
+        </button>
+      </nav>
+    </div>
+    
+    <!-- 移动端导航菜单 -->
+    <div id="mobile-menu" class="md:hidden hidden bg-dark/95 backdrop-blur-md mt-4 py-4 px-4 absolute w-full border-t border-gray-800">
+      <ul class="space-y-4">
+        <li><a href="#home" class="block hover:text-primary transition-colors">首页</a></li>
+        <li><a href="#about" class="block hover:text-primary transition-colors">关于我</a></li>
+        <li><a href="#skills" class="block hover:text-primary transition-colors">技能</a></li>
+        <li><a href="#projects" class="block hover:text-primary transition-colors">项目</a></li>
+        <li><a href="#contact" class="block hover:text-primary transition-colors">联系我</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- 英雄区域 -->
+  <section id="home" class="min-h-screen flex items-center pt-20 bg-gradient-tech overflow-hidden">
+    <div class="container mx-auto px-4 md:px-6 py-16">
+      <div class="flex flex-col md:flex-row items-center gap-12">
+        <!-- 文字内容 -->
+        <div class="md:w-1/2 space-y-6">
+          <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-bold leading-tight text-shadow">
+            你好，我是<span class="text-primary">云凇</span>
+          </h1>
+          <p class="text-gray-300 text-lg md:text-xl max-w-lg">
+            我是一名热爱科技的地球物理工作者，致力于探索前沿技术，创造有价值的项目。
+          </p>
+          <div class="flex flex-wrap gap-4 pt-4">
+            <a href="#contact" class="px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-lg transition-all shadow-lg shadow-primary/20">
+              联系我
+            </a>
+            <a href="#projects" class="px-6 py-3 bg-transparent border border-primary text-primary hover:bg-primary/10 rounded-lg transition-all">
+              查看项目
+            </a>
+          </div>
+          
+          <!-- 社交媒体图标 -->
+          <div class="flex items-center gap-4 pt-6">
+            <p class="text-gray-400">关注我：</p>
+            <a href="https://github.com/YSP0Github/YunSongHome" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-300 hover:bg-primary hover:text-white transition-all">
+              <i class="fa fa-github"></i>
+            </a>
+            <a href="images/GZH_YSZJ_15x15.jpg" target="_blank"  class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-300 hover:bg-primary hover:text-white transition-all">
+              <i class="fa fa-weixin"></i>
+            </a>
+            <a href="https://weibo.com/yunsong519" target="_blank"  class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-300 hover:bg-primary hover:text-white transition-all">
+              <i class="fa fa-weibo"></i>
+            </a>
+            <a href="https://user.qzone.qq.com/2542039659" target="_blank"  class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-300 hover:bg-primary hover:text-white transition-all">
+              <i class="fa fa-qq"></i>
+            </a>
+          </div>
+        </div>
+        
+        <!-- 头像/图片 -->
+        <div class="md:w-1/2 relative">
+          <div class="relative z-10 rounded-2xl overflow-hidden border-4 border-primary/20 shadow-2xl shadow-primary/10 hover-lift">
+            <img src="images/earth.jpg" alt="云松" class="w-full h-auto">
+          </div>
+          <!-- 装饰元素 -->
+          <div class="absolute -bottom-8 -right-8 w-48 h-48 
+              bg-gradient-to-r from-primary/30 to-secondary/30 
+              rounded-full blur-3xl 
+              animate-pulse-slow"></div>
+          <div class="absolute -top-8 -left-8 w-36 h-36 
+              bg-gradient-to-b from-secondary/20 to-primary/20 
+              rounded-full blur-2xl 
+              animate-pulse-slow" style="animation-delay: 1s;"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 滚动指示器 -->
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+      <a href="#about" class="text-gray-400 hover:text-primary transition-colors">
+        <i class="fa fa-angle-down text-2xl"></i>
+      </a>
+    </div>
+  </section>
+
+  <!-- 关于我区域 -->
+  <section id="about" class="py-20 bg-dark">
+    <div class="container mx-auto px-4 md:px-6">
+      <div class="text-center mb-16">
+        <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">关于我</h2>
+        <div class="w-20 h-1 bg-primary mx-auto"></div>
+      </div>
+      
+      <div class="flex flex-col md:flex-row gap-12 items-center">
+        <div class="md:w-1/3">
+          <div class="relative">
+            <img src="images/starrysky1.jpg" alt="关于我的照片" class="rounded-lg shadow-xl">
+            <div class="absolute -bottom-5 -right-5 bg-primary p-4 rounded-lg shadow-lg">
+              <p class="text-xl font-bold">5+ 年</p>
+              <p class="text-sm">开发经验</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="md:w-2/3 space-y-6">
+          <h3 class="text-2xl font-bold text-white">我是一名充满激情的地球物理工作者</h3>
+          <p class="text-gray-300">
+            拥有5年以上的地球物理experiencedexperience工作经验及软件开发经验，专注于创建高效、美观且用户友好的数字产品。我热衷于学习新技术，并将其应用到实际项目中解决复杂问题。
+          </p>
+          <p class="text-gray-300">
+            我的技术栈涵盖前后端开发、地球物理软件开发和数据分析等领域。我相信良好的沟通和团队协作是项目成功的关键，并且始终以用户体验为中心进行开发。
+          </p>
+          
+          <!-- 个人信息 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+            <div class="flex items-center gap-3">
+              <span class="text-primary"><i class="fa fa-user"></i></span>
+              <span>姓名: 云凇</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-primary"><i class="fa fa-envelope"></i></span>
+              <span>邮箱: yusp519@qq.com  <a href="mailto:yusp519@qq.com" class="text-primary">发送邮件</a></span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-primary"><i class="fa fa-map-marker"></i></span>
+              <span>地址: 武汉市</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-primary"><i class="fa fa-code"></i></span>
+              <span>地球物理工作者、全栈开发者</span>
+            </div>
+          </div>
+          
+          <a href="#" class="inline-block px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-lg transition-all shadow-lg shadow-primary/20 mt-4">
+            下载简历 <i class="fa fa-download ml-2"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 技能区域 -->
+  <section id="skills" class="py-20 bg-gray-900">
+    <div class="container mx-auto px-4 md:px-6">
+      <div class="text-center mb-16">
+        <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">我的技能</h2>
+        <div class="w-20 h-1 bg-primary mx-auto"></div>
+        <p class="text-gray-400 mt-4 max-w-2xl mx-auto">
+          多年的开发经验让我掌握了多种技术，能够独立完成从前端到后端的完整开发流程
+        </p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <!-- 技术技能 -->
+        <div class="space-y-6">
+          <h3 class="text-xl font-bold text-white">技术技能</h3>
+          
+          <!-- 技能条 -->
+          <div class="space-y-4">
+            <div>
+              <div class="flex justify-between mb-1">
+                <span>HTML/CSS</span>
+                <span>95%</span>
+              </div>
+              <div class="w-full bg-gray-800 rounded-full h-2.5">
+                <div class="bg-primary h-2.5 rounded-full" style="width: 95%"></div>
+              </div>
+            </div>
+            
+            <div>
+              <div class="flex justify-between mb-1">
+                <span>JavaScript</span>
+                <span>90%</span>
+              </div>
+              <div class="w-full bg-gray-800 rounded-full h-2.5">
+                <div class="bg-primary h-2.5 rounded-full" style="width: 90%"></div>
+              </div>
+            </div>
+            
+            <div>
+              <div class="flex justify-between mb-1">
+                <span>Python</span>
+                <span>85%</span>
+              </div>
+              <div class="w-full bg-gray-800 rounded-full h-2.5">
+                <div class="bg-primary h-2.5 rounded-full" style="width: 85%"></div>
+              </div>
+            </div>
+            
+            <div>
+              <div class="flex justify-between mb-1">
+                <span>Fortran</span>
+                <span>80%</span>
+              </div>
+              <div class="w-full bg-gray-800 rounded-full h-2.5">
+                <div class="bg-primary h-2.5 rounded-full" style="width: 80%"></div>
+              </div>
+            </div>
+            
+            <div>
+              <div class="flex justify-between mb-1">
+                <span>GMT</span>
+                <span>75%</span>
+              </div>
+              <div class="w-full bg-gray-800 rounded-full h-2.5">
+                <div class="bg-primary h-2.5 rounded-full" style="width: 75%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 专业技能 -->
+        <div class="space-y-6">
+          <h3 class="text-xl font-bold text-white">专业技能</h3>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-dark p-6 rounded-lg hover-lift">
+              <div class="text-primary text-3xl mb-4">
+                <i class="fa fa-laptop"></i>
+              </div>
+              <h4 class="text-lg font-semibold mb-2">前端开发</h4>
+              <p class="text-gray-400 text-sm">创建响应式、高性能的用户界面</p>
+            </div>
+            
+            <div class="bg-dark p-6 rounded-lg hover-lift">
+              <div class="text-primary text-3xl mb-4">
+                <i class="fa fa-server"></i>
+              </div>
+              <h4 class="text-lg font-semibold mb-2">后端开发</h4>
+              <p class="text-gray-400 text-sm">设计和实现可靠的服务器端解决方案</p>
+            </div>
+            
+            <div class="bg-dark p-6 rounded-lg hover-lift">
+              <div class="text-primary text-3xl mb-4">
+                <i class="fa fa-database"></i>
+              </div>
+              <h4 class="text-lg font-semibold mb-2">地球物理软件开发</h4>
+              <p class="text-gray-400 text-sm">开发地球物理数据处理和可视化工具</p>
+            </div>
+            
+            <div class="bg-dark p-6 rounded-lg hover-lift">
+              <div class="text-primary text-3xl mb-4">
+                <i class="fa fa-cogs"></i>
+              </div>
+              <h4 class="text-lg font-semibold mb-2">数据分析系统</h4>
+              <p class="text-gray-400 text-sm">设计可扩展、可维护的数据分析系统</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 项目展示 -->
+  <section id="projects" class="py-20 bg-dark">
+    <div class="container mx-auto px-4 md:px-6">
+      <div class="text-center mb-16">
+        <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">我的项目</h2>
+        <div class="w-20 h-1 bg-primary mx-auto"></div>
+        <p class="text-gray-400 mt-4 max-w-2xl mx-auto">
+          探索我的一些精选项目，展示了我的技术能力和解决问题的方法
+        </p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- 项目卡片1 -->
+        <div class="bg-gray-900 rounded-xl overflow-hidden hover-lift">
+          <div class="relative overflow-hidden">
+            <img src="images/space_to_earth.jpg" alt="项目图片" class="w-full h-56 object-cover transition-transform duration-500 hover:scale-110">
+            <div class="absolute top-4 right-4 bg-primary text-white text-xs px-3 py-1 rounded-full">
+              SeisY
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2">地震数据处理软件</h3>
+            <p class="text-gray-400 text-sm mb-4">
+              开发了一款地震数据处理软件，支持数据预处理、特征提取和可视化分析
+            </p>
+            <a href="HTML/SeisY.html" target="_blank" class="text-primary hover:text-primary/80 flex items-center text-sm font-medium transition-colors">
+              查看详情 <i class="fa fa-arrow-right ml-2"></i>
+            </a>
+          </div>
+        </div>
+        
+        <!-- 项目卡片2 -->
+        <div class="bg-gray-900 rounded-xl overflow-hidden hover-lift">
+          <div class="relative overflow-hidden">
+            <img src="images/starrysky3.jpg" alt="项目图片" class="w-full h-56 object-cover transition-transform duration-500 hover:scale-110">
+            <div class="absolute top-4 right-4 bg-secondary text-white text-xs px-3 py-1 rounded-full">
+              SeisD
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2">地震实时监测系统</h3>
+            <p class="text-gray-400 text-sm mb-4">
+              开发了一个地震实时监测系统，支持数据自动化采集、处理和可视化
+            </p>
+            <a href="HTML/SeisD.html" target="_blank" class="text-primary hover:text-primary/80 flex items-center text-sm font-medium transition-colors">
+              查看详情 <i class="fa fa-arrow-right ml-2"></i>
+            </a>
+          </div>
+        </div>
+        
+        <!-- 项目卡片3 -->
+        <div class="bg-gray-900 rounded-xl overflow-hidden hover-lift">
+          <div class="relative overflow-hidden">
+            <img src="images/starrysky4.jpg" alt="项目图片" class="w-full h-56 object-cover transition-transform duration-500 hover:scale-110">
+            <div class="absolute top-4 right-4 bg-primary text-white text-xs px-3 py-1 rounded-full">
+              YSKY
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2">云凇科研网站</h3>
+            <p class="text-gray-400 text-sm mb-4">
+              开发了一个云凇科研网站，提供科研项目展示和用户互动功能
+            </p>
+            <a href="HTML/YSKY.html" target="_blank" class="text-primary hover:text-primary/80 flex items-center text-sm font-medium transition-colors">
+              查看详情 <i class="fa fa-arrow-right ml-2"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- 项目卡片4 -->
+        <div class="bg-gray-900 rounded-xl overflow-hidden hover-lift">
+          <div class="relative overflow-hidden">
+            <img src="images/starrysky1.jpg" alt="项目图片" class="w-full h-56 object-cover transition-transform duration-500 hover:scale-110">
+            <div class="absolute top-4 right-4 bg-primary text-white text-xs px-3 py-1 rounded-full">
+              funhome
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2">趣味屋</h3>
+            <p class="text-gray-400 text-sm mb-4">
+              开发了一个趣味屋网站，提供趣味项目展示和用户互动功能
+            </p>
+            <a href="funhome/funhome.html" target="_blank" class="text-primary hover:text-primary/80 flex items-center text-sm font-medium transition-colors">
+              查看详情 <i class="fa fa-arrow-right ml-2"></i>
+            </a>
+          </div>
+        </div>      
+       <!-- 项目卡片5 -->
+        <div class="bg-gray-900 rounded-xl overflow-hidden hover-lift">
+          <div class="relative overflow-hidden">
+            <img src="images/zhufeng.jpg" alt="项目图片" class="w-full h-56 object-cover transition-transform duration-500 hover:scale-110">
+            <div class="absolute top-4 right-4 bg-primary text-white text-xs px-3 py-1 rounded-full">
+              yunji
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2">云记编辑器</h3>
+            <p class="text-gray-400 text-sm mb-4">
+              开发了一个云记编辑器，一款轻量级、高效的Python文本编辑器，专为开发者设计，简单易用且功能强大。
+            </p>
+            <a href="HTML/yunji.html" target="_blank" class="text-primary hover:text-primary/80 flex items-center text-sm font-medium transition-colors">
+              查看详情 <i class="fa fa-arrow-right ml-2"></i>
+            </a>
+          </div>
+        </div>
+
+       <!-- 项目卡片6 -->
+        <div class="bg-gray-900 rounded-xl overflow-hidden hover-lift">
+          <div class="relative overflow-hidden">
+            <img src="images/blackhole.jpg" alt="项目图片" class="w-full h-56 object-cover transition-transform duration-500 hover:scale-110">
+            <div class="absolute top-4 right-4 bg-primary text-white text-xs px-3 py-1 rounded-full">
+              个人空间
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2"> 云凇学术</h3>
+            <p class="text-gray-400 text-sm mb-4">
+              开发了一个云凇学术网站，提供科研文献管理和搜索功能。
+            </p>
+            <a href="HTML/References.html" target="_blank" class="text-primary hover:text-primary/80 flex items-center text-sm font-medium transition-colors">
+              查看详情 <i class="fa fa-arrow-right ml-2"></i>
+            </a>
+          </div>
+        </div>
+
+      </div>
+      
+      <div class="text-center mt-12">
+        <a href="#" class="inline-block px-6 py-3 border border-primary text-primary hover:bg-primary hover:text-white rounded-lg transition-all">
+          查看更多项目
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 联系区域 -->
+  <section id="contact" class="py-20 bg-gray-900">
+      <div class="container mx-auto px-4 md:px-6">
+          <div class="text-center mb-16">
+              <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">联系我</h2>
+              <div class="w-20 h-1 bg-primary mx-auto"></div>
+              <p class="text-gray-400 mt-4 max-w-2xl mx-auto">
+                  有任何问题或合作意向？请随时联系我，我会尽快回复
+              </p>
+          </div>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+              <!-- 联系信息 -->
+              <div class="lg:col-span-2 space-y-8">
+                  <div class="bg-dark p-6 rounded-xl">
+                      <h3 class="text-xl font-bold mb-6">联系信息</h3>
+                      
+                      <div class="space-y-4">
+                          <div class="flex items-start gap-4">
+                              <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary flex-shrink-0">
+                                  <i class="fa fa-envelope"></i>
+                              </div>
+                              <div>
+                                  <h4 class="font-medium">邮箱</h4>
+                                  <p class="text-gray-400">yusp519@qq.com</p>
+                              </div>
+                          </div>
+                          
+                          <div class="flex items-start gap-4">
+                              <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary flex-shrink-0">
+                                  <i class="fa fa-phone"></i>
+                              </div>
+                              <div>
+                                  <h4 class="font-medium">电话</h4>
+                                  <p class="text-gray-400">+86 173 7145 6519</p>
+                              </div>
+                          </div>
+                          
+                          <div class="flex items-start gap-4">
+                              <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary flex-shrink-0">
+                                  <i class="fa fa-map-marker"></i>
+                              </div>
+                              <div>
+                                  <h4 class="font-medium">地址</h4>
+                                  <p class="text-gray-400">湖北省武汉市洪山区鲁磨路388号</p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  
+                  <div class="bg-dark p-6 rounded-xl">
+                      <h3 class="text-xl font-bold mb-6">工作时间</h3>
+                      <div class="space-y-2">
+                          <div class="flex justify-between">
+                              <span>周一至周五</span>
+                              <span>9:00 - 17:00</span>
+                          </div>
+                          <div class="w-full h-px bg-gray-800 my-2"></div>
+                          <div class="flex justify-between">
+                              <span>周六</span>
+                              <span>10:00 - 16:00</span>
+                          </div>
+                          <div class="w-full h-px bg-gray-800 my-2"></div>
+                          <div class="flex justify-between">
+                              <span>周日</span>
+                              <span>休息</span>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              
+              <!-- 联系表单 -->
+              <div class="lg:col-span-3 bg-dark p-6 md:p-8 rounded-xl">
+                  <h3 class="text-xl font-bold mb-6">发送消息</h3>
+                  
+                  <form id="contactForm">
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                          <div>
+                              <label for="name" class="block text-sm font-medium mb-2">姓名</label>
+                              <input type="text" id="name" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="你的姓名" required>
+                          </div>
+                          
+                          <div>
+                              <label for="email" class="block text-sm font-medium mb-2">邮箱</label>
+                              <input type="email" id="email" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="你的邮箱" required>
+                          </div>
+                      </div>
+                      
+                      <div class="mb-6">
+                          <label for="subject" class="block text-sm font-medium mb-2">主题</label>
+                          <input type="text" id="subject" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="消息主题" required>
+                      </div>
+                      
+                      <div class="mb-6">
+                          <label for="message" class="block text-sm font-medium mb-2">消息</label>
+                          <textarea id="message" rows="5" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none" placeholder="你的消息内容" required></textarea>
+                      </div>
+                      
+                      <button type="submit" class="w-full md:w-auto px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-lg transition-all shadow-lg shadow-primary/20">
+                          发送消息 <i class="fa fa-paper-plane ml-2"></i>
+                      </button>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer class="py-10 bg-dark border-t border-gray-800">
+    <div class="container mx-auto px-4 md:px-6">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-6 md:mb-0">
+          <a href="#" class="text-2xl font-bold text-white flex items-center justify-center md:justify-start">
+            <span class="text-primary mr-1"><i class="fa fa-home"></i></span>
+            <span>云凇之家</span>
+          </a>
+          <p class="text-gray-400 text-sm mt-2 text-center md:text-left">
+            探索技术，创造未来
+          </p>
+        </div>
+        
+        <div class="flex gap-4">
+          <a href="https://github.com/YSP0Github/YSZJ" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-300 hover:bg-primary hover:text-white transition-all">
+            <i class="fa fa-github"></i>
+          </a>
+          <a href="images/GZH_YSZJ_15x15.jpg" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-300 hover:bg-primary hover:text-white transition-all">
+            <i class="fa fa-weixin"></i>
+          </a>
+          <a href="https://user.qzone.qq.com/2542039659" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-300 hover:bg-primary hover:text-white transition-all">
+            <i class="fa fa-qq"></i>
+          </a>
+          <a href="https://weibo.com/yunsong519" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-300 hover:bg-primary hover:text-white transition-all">
+            <i class="fa fa-weibo"></i>
+          </a>
+        </div>
+      </div>
+        <!-- 新增“关于我们”链接（可放在版权信息上方） -->
+      <div class="text-center my-6">
+        <a href="HTML/About_us.html" target="_blank" class="text-gray-400 hover:text-primary transition-colors text-sm">关于我们</a>
+        <span class="mx-2 text-gray-600">|</span>
+        <a href="HTML/Privacy_policy.html" target="_blank" class="text-gray-400 hover:text-primary transition-colors text-sm">隐私政策</a> <!-- 可选 -->
+      </div>
+
+      
+      <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
+        <p>&copy; 2023 云凇之家. 保留所有权利。</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+   <script>
+  // 获取表单元素
+  const contactForm = document.getElementById('contactForm');
+
+  // 表单提交事件处理
+  contactForm.addEventListener('submit', function(e) {
+    // 阻止表单默认提交行为
+    e.preventDefault();
+    
+    // 获取表单值
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const subject = document.getElementById('subject').value.trim();
+    const message = document.getElementById('message').value.trim();
+    
+    // 简单验证
+    if (!name || !email || !subject || !message) {
+        alert('请填写所有必填字段');
+        return;
+    }
+    
+    // 验证邮箱格式
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        alert('请输入有效的邮箱地址');
+        return;
+    }
+    
+    // 收件人邮箱（你的邮箱）
+    const recipient = 'yusp519@qq.com';
+    
+    // 构建邮件内容
+    const body = `
+        发件人: ${name}
+        发件人邮箱: ${email}
+        消息内容:
+        ${message}
+    `.replace(/\n/g, '%0A'); // 替换换行符为URL编码
+    
+    // 构建mailto链接
+    const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${body}`;
+    
+    // 触发邮件客户端
+    window.location.href = mailtoLink;
+    
+    // 显示提示信息
+    setTimeout(() => {
+        alert('如果你的邮件客户端已正确配置，将自动打开发送界面。\n若未打开，请手动发送邮件至：' + recipient);
+        // 重置表单
+        contactForm.reset();
+    }, 500);
+  });
+
+    // 导航栏滚动效果
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        navbar.classList.add('bg-dark/95', 'backdrop-blur-md', 'shadow-lg', 'py-2');
+        navbar.classList.remove('py-4');
+      } else {
+        navbar.classList.remove('bg-dark/95', 'backdrop-blur-md', 'shadow-lg', 'py-2');
+        navbar.classList.add('py-4');
+      }
+    });
+    
+    // 移动端菜单切换
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    menuToggle.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+      const icon = menuToggle.querySelector('i');
+      if (icon.classList.contains('fa-bars')) {
+        icon.classList.replace('fa-bars', 'fa-times');
+      } else {
+        icon.classList.replace('fa-times', 'fa-bars');
+      }
+    });
+    
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // 关闭移动菜单（如果打开）
+        if (!mobileMenu.classList.contains('hidden')) {
+          mobileMenu.classList.add('hidden');
+          const icon = menuToggle.querySelector('i');
+          icon.classList.replace('fa-times', 'fa-bars');
+        }
+        
+        const targetId = this.getAttribute('href');
+        const targetElement = document.querySelector(targetId);
+        
+        if (targetElement) {
+          window.scrollTo({
+            top: targetElement.offsetTop - 80, // 考虑导航栏高度
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+    
+    // 页面加载动画
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.classList.add('opacity-100');
+      document.body.classList.remove('opacity-0');
+    });
+   </script>
+    <!-- </script> -->
+</body>
+</html>

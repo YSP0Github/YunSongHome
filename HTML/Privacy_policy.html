@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>隐私政策 - 云凇之家</title>
+    <!-- 引入Tailwind.css -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 配置Tailwind自定义颜色和字体 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6', // 主色调（蓝色）
+                        secondary: '#10B981', // 辅助色（绿色）
+                        dark: '#1E1E2E',
+                        'gray-900': '#121212',
+                        'gray-800': '#1F1F1F',
+                        'gray-700': '#374151',
+                        'gray-400': '#9CA3AF',
+                        'gray-300': '#D1D5DB'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .hover-lift {
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+            .hover-lift:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            }
+        }
+        
+        /* 页面过渡效果 */
+        body {
+            transition: opacity 0.5s ease-in-out;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-white opacity-0">
+    <!-- 导航栏 -->
+    <nav id="navbar" class="fixed w-full top-0 z-50 transition-all duration-300 py-4">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <a href="YS.html" class="text-2xl font-bold flex items-center">
+                    <span class="text-primary mr-1"><i class="fa fa-home"></i></span>
+                    <span>云凇之家</span>
+                </a>
+                
+                <!-- 桌面端菜单 -->
+                <ul class="hidden md:flex items-center gap-8">
+                    <li><a href="YS.html#home" class="text-gray-300 hover:text-primary transition-colors">首页</a></li>
+                    <li><a href="YS.html#about" class="text-gray-300 hover:text-primary transition-colors">关于</a></li>
+                    <li><a href="YS.html#skills" class="text-gray-300 hover:text-primary transition-colors">技能</a></li>
+                    <li><a href="YS.html#projects" class="text-gray-300 hover:text-primary transition-colors">项目</a></li>
+                    <li><a href="YS.html#contact" class="text-gray-300 hover:text-primary transition-colors">联系</a></li>
+                    <li><a href="Privacy_policy.html" class="text-primary hover:text-primary/80 transition-colors">隐私政策</a></li>
+                </ul>
+                
+                <!-- 移动端菜单按钮 -->
+                <button id="menu-toggle" class="md:hidden text-gray-300 hover:text-primary">
+                    <i class="fa fa-bars text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- 移动端菜单 -->
+            <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 w-full bg-dark/95 backdrop-blur-md shadow-lg py-4 px-6">
+                <ul class="space-y-4">
+                    <li><a href="YS.html#home" class="block text-gray-300 hover:text-primary transition-colors">首页</a></li>
+                    <li><a href="YS.html#about" class="block text-gray-300 hover:text-primary transition-colors">关于</a></li>
+                    <li><a href="YS.html#skills" class="block text-gray-300 hover:text-primary transition-colors">技能</a></li>
+                    <li><a href="YS.html#projects" class="block text-gray-300 hover:text-primary transition-colors">项目</a></li>
+                    <li><a href="YS.html#contact" class="block text-gray-300 hover:text-primary transition-colors">联系</a></li>
+                    <li><a href="Privacy_policy.html" class="block text-primary hover:text-primary/80 transition-colors">隐私政策</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 隐私政策内容区域 -->
+    <section id="privacy-policy" class="pt-32 pb-20 bg-gray-900">
+        <div class="container mx-auto px-4 md:px-6 max-w-4xl">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">隐私政策</h2>
+                <div class="w-20 h-1 bg-primary mx-auto"></div>
+                <p class="text-gray-400 mt-4">
+                    最后更新：2023年10月15日
+                </p>
+            </div>
+            
+            <div class="bg-dark p-8 rounded-xl shadow-lg">
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-xl font-bold mb-4 text-primary">1. 引言</h3>
+                        <p class="text-gray-300 leading-relaxed">
+                            欢迎访问云凇之家（以下简称"本网站"）。我们尊重您的隐私，并致力于保护您的个人信息。本隐私政策旨在说明我们如何收集、使用、存储和保护您在使用本网站时提供的信息。
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-bold mb-4 text-primary">2. 信息收集</h3>
+                        <p class="text-gray-300 leading-relaxed mb-4">
+                            当您访问或使用本网站时，我们可能收集以下类型的信息：
+                        </p>
+                        <ul class="list-disc pl-6 text-gray-300 space-y-2">
+                            <li>个人识别信息：当您联系我们时，您可能会向我们提供姓名、电子邮件地址、电话号码等信息</li>
+                            <li>使用数据：包括您访问的页面、访问时间、使用的浏览器类型、IP地址等</li>
+                            <li> cookies和类似技术：我们可能使用cookies来改善您的浏览体验</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-bold mb-4 text-primary">3. 信息使用</h3>
+                        <p class="text-gray-300 leading-relaxed mb-4">
+                            我们收集的信息将用于以下目的：
+                        </p>
+                        <ul class="list-disc pl-6 text-gray-300 space-y-2">
+                            <li>回应您的查询和请求</li>
+                            <li>改进我们的网站和服务</li>
+                            <li>提供个性化的用户体验</li>
+                            <li>确保网站的安全和正常运行</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-bold mb-4 text-primary">4. 信息共享</h3>
+                        <p class="text-gray-300 leading-relaxed">
+                            我们不会向第三方出售、交易或出租您的个人信息，除非获得您的明确许可，或法律要求我们这样做。我们可能会与协助我们运营网站或提供服务的可信合作伙伴共享信息，但这些合作伙伴将被要求保护您的信息并仅用于指定目的。
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-bold mb-4 text-primary">5. 信息保护</h3>
+                        <p class="text-gray-300 leading-relaxed">
+                            我们采用适当的技术和安全措施来保护您的个人信息免受未经授权的访问、使用或泄露。然而，请注意，互联网上的任何传输都不能完全保证安全，我们不能确保或保证您传输给我们的任何信息的安全性。
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-bold mb-4 text-primary">6. 您的权利</h3>
+                        <p class="text-gray-300 leading-relaxed mb-4">
+                            您有权：
+                        </p>
+                        <ul class="list-disc pl-6 text-gray-300 space-y-2">
+                            <li>访问我们收集的关于您的个人信息</li>
+                            <li>要求我们更正或删除您的个人信息</li>
+                            <li>限制或反对我们使用您的个人信息</li>
+                            <li>如果您对我们的隐私实践有任何疑问，请通过联系页面与我们联系</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-bold mb-4 text-primary">7. 政策变更</h3>
+                        <p class="text-gray-300 leading-relaxed">
+                            我们可能会不时更新本隐私政策。任何更改将在本页面发布，并更新"最后更新"日期。我们鼓励您定期查看本政策，了解我们如何保护您的信息。
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-bold mb-4 text-primary">8. 联系我们</h3>
+                        <p class="text-gray-300 leading-relaxed">
+                            如果您对本隐私政策有任何疑问或 concerns，请通过以下方式联系我们：
+                        </p>
+                        <div class="flex items-center gap-3 mt-2">
+                            <span class="text-primary"><i class="fa fa-envelope"></i></span>
+                            <span>yusp519@qq.com</span>
+                        </div>
+                        <div class="flex items-center gap-3 mt-2">
+                            <span class="text-primary"><i class="fa fa-phone"></i></span>
+                            <span>+86 173 7145 6519</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="py-10 bg-dark border-t border-gray-800">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <a href="YS.html" class="text-2xl font-bold text-white flex items-center justify-center md:justify-start">
+                        <span class="text-primary mr-1"><i class="fa fa-home"></i></span>
+                        <span>云凇之家</span>
+                    </a>
+                    <p class="text-gray-400 text-sm mt-2 text-center md:text-left">
+                        探索技术，创造未来
+                    </p>
+                </div>
+                
+                <div class="flex gap-4">
+                    <a href="https://github.com/YSP0Github" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-300 hover:bg-primary hover:text-white transition-all">
+                        <i class="fa fa-github"></i>
+                    </a>
+                    <a href="images/GZH_YSZJ_15x15.jpg" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-300 hover:bg-primary hover:text-white transition-all">
+                        <i class="fa fa-weixin"></i>
+                    </a>
+                    <a href="https://user.qzone.qq.com/2542039659" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-300 hover:bg-primary hover:text-white transition-all">
+                        <i class="fa fa-qq"></i>
+                    </a>
+                    <a href="https://weibo.com/yunsong519" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-300 hover:bg-primary hover:text-white transition-all">
+                        <i class="fa fa-weibo"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="text-center my-6">
+                <a href="Privacy_policy.html" target="_blank" class="text-gray-400 hover:text-primary transition-colors text-sm">隐私政策</a>
+                <span class="mx-2 text-gray-600">|</span>
+                <a href="About_us.html" target="_blank" class="text-gray-400 hover:text-primary transition-colors text-sm">关于我们</a>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
+                <p>&copy; 2023 云凇之家. 保留所有权利。</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.classList.add('opacity-100');
+            document.body.classList.remove('opacity-0');
+        });
+
+        // 导航栏滚动效果
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('bg-dark/95', 'backdrop-blur-md', 'shadow-lg', 'py-2');
+                navbar.classList.remove('py-4');
+            } else {
+                navbar.classList.remove('bg-dark/95', 'backdrop-blur-md', 'shadow-lg', 'py-2');
+                navbar.classList.add('py-4');
+            }
+        });
+
+        // 移动端菜单切换
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            const icon = menuToggle.querySelector('i');
+            if (icon.classList.contains('fa-bars')) {
+                icon.classList.replace('fa-bars', 'fa-times');
+            } else {
+                icon.classList.replace('fa-times', 'fa-bars');
+            }
+        });
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // 关闭移动菜单（如果打开）
+                if (!mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                    const icon = menuToggle.querySelector('i');
+                    icon.classList.replace('fa-times', 'fa-bars');
+                }
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80, // 考虑导航栏高度
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeisY - 专业地球物理数据处理软件</title>
+    <!-- 引入外部资源 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <link rel="icon" href="../images/SeisY.ico">
+    <!-- Tailwind配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0F52BA', // 主色调：深蓝色（体现专业、可靠）
+                        secondary: '#3B82F6', // 辅助色：中蓝色
+                        accent: '#10B981', // 强调色：绿色（用于突出按钮和关键信息）
+                        dark: '#1E293B',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .transition-custom {
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .card-hover {
+                @apply hover:shadow-xl hover:-translate-y-1 transition-all duration-300;
+            }
+            .section-padding {
+                @apply py-16 md:py-24;
+            }
+            .gradient-overlay {
+                background: linear-gradient(135deg, rgba(15, 82, 186, 0.9) 0%, rgba(59, 130, 246, 0.8) 100%);
+            }
+        }
+        
+        /* 全局样式 */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* 动画效果 */
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out forwards;
+            opacity: 0;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 延迟动画 */
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .delay-500 { animation-delay: 0.5s; }
+    </style>
+</head>
+<body class="font-sans bg-light text-dark antialiased">
+    <!-- 导航栏 -->
+    <nav id="navbar" class="fixed w-full bg-white/95 backdrop-blur-sm shadow-sm z-50 transition-custom">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <a href="#hero" class="flex items-center space-x-2">
+                    <!-- 用SeisY.ico图标 ，不要边缘-->
+                    <div class="w-10 h-10 rounded-lg  flex items-center justify-center">
+                        <img src="../images/SeisY.ico" alt="SeisY" class="w-8 h-8">
+                    </div>
+                    <span class="font-bold text-xl">SeisY</span>
+                </a>
+                
+                <!-- 桌面端导航 -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#overview" class="text-dark/80 hover:text-primary transition-custom">软件概述</a>
+                    <a href="#features" class="text-dark/80 hover:text-primary transition-custom">核心功能</a>
+                    <a href="#tech" class="text-dark/80 hover:text-primary transition-custom">技术特点</a>
+                    <a href="#cases" class="text-dark/80 hover:text-primary transition-custom">应用案例</a>
+                    <a href="#download" class="px-5 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-custom">立即下载</a>
+                </div>
+                
+                <!-- 移动端菜单按钮 -->
+                <button id="menu-toggle" class="md:hidden text-dark hover:text-primary transition-custom">
+                    <i class="fa fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 移动端导航菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t shadow-md">
+            <div class="container mx-auto px-4 py-3 space-y-3">
+                <a href="#overview" class="block py-2 text-dark/80 hover:text-primary transition-custom">软件概述</a>
+                <a href="#features" class="block py-2 text-dark/80 hover:text-primary transition-custom">核心功能</a>
+                <a href="#tech" class="block py-2 text-dark/80 hover:text-primary transition-custom">技术特点</a>
+                <a href="#cases" class="block py-2 text-dark/80 hover:text-primary transition-custom">应用案例</a>
+                <a href="#download" class="block py-2 px-4 bg-primary text-white rounded-lg text-center hover:bg-primary/90 transition-custom">立即下载</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <header id="hero" class="relative pt-16 min-h-screen flex items-center overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 -z-10"></div>
+        
+        <!-- 装饰元素 -->
+        <div class="absolute right-0 top-1/4 w-96 h-96 bg-primary/5 rounded-full filter blur-3xl -z-10"></div>
+        <div class="absolute left-1/4 bottom-0 w-72 h-72 bg-secondary/5 rounded-full filter blur-3xl -z-10"></div>
+        
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div class="max-w-4xl mx-auto text-center">
+                <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-bold leading-tight mb-6 text-shadow fade-in">
+                    SeisY<br>
+                    <span class="text-primary">地球物理数据处理软件</span>
+                </h1>
+                <p class="text-lg md:text-xl text-dark/70 mb-10 max-w-2xl mx-auto fade-in delay-200">
+                    专业、高效、精准的地球物理数据处理解决方案，为地质勘探、资源开发提供强大技术支持
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4 fade-in delay-300">
+                    <a href="#download" class="px-8 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-custom shadow-lg shadow-primary/20">
+                        <i class="fa fa-download mr-2"></i> 免费试用
+                    </a>
+                    <a href="#features" class="px-8 py-3 bg-white text-primary border border-primary rounded-lg font-medium hover:bg-primary/5 transition-custom">
+                        <i class="fa fa-list-check mr-2"></i> 了解功能
+                    </a>
+                </div>
+                
+                <!-- 软件界面预览 -->
+                <div class="mt-16 max-w-4xl mx-auto rounded-xl overflow-hidden shadow-2xl fade-in delay-400">
+                    <img src="https://picsum.photos/id/180/1200/600" alt="SeisY软件界面预览" class="w-full h-auto">
+                </div>
+            </div>
+        </div>
+        
+        <!-- 滚动指示器 -->
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <a href="#overview" class="text-dark/50 hover:text-primary transition-custom">
+                <i class="fa fa-chevron-down text-2xl"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- 软件概述 -->
+    <section id="overview" class="section-padding bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">软件概述</h2>
+                <div class="w-20 h-1 bg-primary mx-auto mb-6"></div>
+                <p class="text-dark/70 max-w-2xl mx-auto">SeisY是一款专为地球物理数据处理设计的专业软件，集成了多种先进算法与可视化工具</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6 text-primary">关于SeisY</h3>
+                    <p class="text-dark/80 mb-6 leading-relaxed">
+                        SeisY地球物理数据处理软件由资深地球物理专家团队开发，专注于为矿产资源勘探、工程地质调查、
+                        环境监测等领域提供高效、精准的数据处理解决方案。
+                    </p>
+                    <p class="text-dark/80 mb-8 leading-relaxed">
+                        软件集成了地震数据处理、重力磁法数据解释、电法数据反演等多种功能模块，
+                        采用先进的数值算法和可视化技术，帮助用户快速处理复杂地球物理数据，提取有效地质信息。
+                    </p>
+                    
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-primary mb-2">10+</div>
+                            <div class="text-dark/70 text-sm">专业模块</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-primary mb-2">50+</div>
+                            <div class="text-dark/70 text-sm">处理算法</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-primary mb-2">1000+</div>
+                            <div class="text-dark/70 text-sm">用户信赖</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="relative">
+                    <div class="rounded-2xl overflow-hidden shadow-xl">
+                        <img src="https://picsum.photos/id/201/800/600" alt="SeisY软件功能展示" class="w-full h-auto">
+                    </div>
+                    <div class="absolute -bottom-6 -left-6 bg-white p-6 rounded-xl shadow-lg hidden md:block">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center text-accent">
+                                <i class="fa fa-check text-xl"></i>
+                            </div>
+                            <div>
+                                <div class="font-medium">精度验证</div>
+                                <div class="text-dark/70 text-sm">通过国家地质调查标准认证</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 核心功能 -->
+    <section id="features" class="section-padding bg-gray-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">核心功能</h2>
+                <div class="w-20 h-1 bg-primary mx-auto mb-6"></div>
+                <p class="text-dark/70 max-w-2xl mx-auto">SeisY提供全方位的地球物理数据处理功能，满足不同应用场景需求</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 功能1 -->
+                <div class="bg-white p-8 rounded-xl shadow-md card-hover">
+                    <div class="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-2xl mb-6">
+                        <i class="fa fa-wave-square"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">地震数据处理</h3>
+                    <p class="text-dark/70 mb-4">
+                        提供地震数据预处理、偏移校正、速度分析、叠加成像等完整处理流程，支持多种数据格式导入导出。
+                    </p>
+                    <ul class="text-dark/70 space-y-2">
+                        <li class="flex items-center"><i class="fa fa-check text-accent mr-2"></i> 噪声压制算法</li>
+                        <li class="flex items-center"><i class="fa fa-check text-accent mr-2"></i> 反射波提取</li>
+                        <li class="flex items-center"><i class="fa fa-check text-accent mr-2"></i> 三维可视化</li>
+                    </ul>
+                </div>
+                
+                <!-- 功能2 -->
+                <div class="bg-white p-8 rounded-xl shadow-md card-hover">
+                    <div class="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-2xl mb-6">
+                        <i class="fa fa-magnet"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">重磁数据解释</h3>
+                    <p class="text-dark/70 mb-4">
+                        集成重力、磁法数据处理与解释模块，支持数据校正、延拓、导数计算及位场反演等功能。
+                    </p>
+                    <ul class="text-dark/70 space-y-2">
+                        <li class="flex items-center"><i class="fa fa-check text-accent mr-2"></i> 区域场分离</li>
+                        <li class="flex items-center"><i class="fa fa-check text-accent mr-2"></i> 人机交互反演</li>
+                        <li class="flex items-center"><i class="fa fa-check text-accent mr-2"></i> 异常提取</li>
+                    </ul>
+                </div>
+                
+                <!-- 功能3 -->
+                <div class="bg-white p-8 rounded-xl shadow-md card-hover">
+                    <div class="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-2xl mb-6">
+                        <i class="fa fa-bolt"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">电法数据处理</h3>
+                    <p class="text-dark/70 mb-4">
+                        支持直流电法、激电法、电磁法等数据处理，提供数据校正、反演成像和解释分析工具。
+                    </p>
+                    <ul class="text-dark/70 space-y-2">
+                        <li class="flex items-center"><i class="fa fa-check text-accent mr-2"></i> 视电阻率计算</li>
+                        <li class="flex items-center"><i class="fa fa-check text-accent mr-2"></i> 二维/三维反演</li>
+                        <li class="flex items-center"><i class="fa fa-check text-accent mr-2"></i> 断面成像</li>
+                    </ul>
+                </div>
+                
+                <!-- 功能4 -->
+                <div class="bg-white p-8 rounded-xl shadow-md card-hover">
+                    <div class="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-2xl mb-6">
+                        <i class="fa fa-chart-line"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">数据可视化</h3>
+                    <p class="text-dark/70 mb-4">
+                        强大的可视化引擎，支持多种图表类型和三维模型展示，可自定义颜色方案和显示参数。
+                    </p>
+                    <ul class="text-dark/70 space-y-2">
+                        <li class="flex items-center"><i class="fa fa-check text-accent mr-2"></i> 等值线图</li>
+                        <li class="flex items-center"><i class="fa fa-check text-accent mr-2"></i> 剖面图</li>
+                        <li class="flex items-center"><i class="fa fa-check text-accent mr-2"></i> 三维模型</li>
+                    </ul>
+                </div>
+                
+                <!-- 功能5 -->
+                <div class="bg-white p-8 rounded-xl shadow-md card-hover">
+                    <div class="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-2xl mb-6">
+                        <i class="fa fa-database"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">数据管理</h3>
+                    <p class="text-dark/70 mb-4">
+                        完善的数据管理系统，支持多种格式数据导入导出，可进行数据查询、筛选和批量处理。
+                    </p>
+                    <ul class="text-dark/70 space-y-2">
+                        <li class="flex items-center"><i class="fa fa-check text-accent mr-2"></i> 多格式支持</li>
+                        <li class="flex items-center"><i class="fa fa-check text-accent mr-2"></i> 数据查询</li>
+                        <li class="flex items-center"><i class="fa fa-check text-accent mr-2"></i> 批量处理</li>
+                    </ul>
+                </div>
+                
+                <!-- 功能6 -->
+                <div class="bg-white p-8 rounded-xl shadow-md card-hover">
+                    <div class="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-2xl mb-6">
+                        <i class="fa fa-file-pen"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">报告生成</h3>
+                    <p class="text-dark/70 mb-4">
+                        内置报告生成工具，可自动生成处理报告，支持自定义模板，方便成果展示与分享。
+                    </p>
+                    <ul class="text-dark/70 space-y-2">
+                        <li class="flex items-center"><i class="fa fa-check text-accent mr-2"></i> 模板定制</li>
+                        <li class="flex items-center"><i class="fa fa-check text-accent mr-2"></i> 图文混排</li>
+                        <li class="flex items-center"><i class="fa fa-check text-accent mr-2"></i> 多格式导出</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 技术特点 -->
+    <section id="tech" class="section-padding bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">技术特点</h2>
+                <div class="w-20 h-1 bg-primary mx-auto mb-6"></div>
+                <p class="text-dark/70 max-w-2xl mx-auto">SeisY采用先进技术架构，确保处理效率与结果精度</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <div class="mb-8">
+                        <h3 class="text-2xl font-semibold mb-6">高性能计算引擎</h3>
+                        <div class="bg-gray-50 p-6 rounded-xl">
+                            <canvas id="performanceChart" height="250"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div class="flex">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-4">
+                                <i class="fa fa-bolt"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg mb-1">并行计算技术</h4>
+                                <p class="text-dark/70">支持多线程并行处理，大幅提升大规模数据处理效率，比传统软件快3-5倍。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-4">
+                                <i class="fa fa-shield"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg mb-1">算法优化</h4>
+                                <p class="text-dark/70">采用改进的地球物理数据处理算法，提高处理精度和稳定性，减少人工干预。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="space-y-8">
+                        <div>
+                            <h3 class="text-2xl font-semibold mb-4">用户友好设计</h3>
+                            <p class="text-dark/70 mb-4">
+                                采用直观的用户界面设计，工作流程清晰，操作简便，降低学习成本，提高工作效率。
+                            </p>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-accent mt-1 mr-3"></i>
+                                    <span class="text-dark/70">自定义工作流，支持常用操作一键执行</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-accent mt-1 mr-3"></i>
+                                    <span class="text-dark/70">上下文敏感帮助系统，实时提供操作指导</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-accent mt-1 mr-3"></i>
+                                    <span class="text-dark/70">可定制界面布局，适应不同用户习惯</span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-2xl font-semibold mb-4">兼容性与扩展性</h3>
+                            <p class="text-dark/70 mb-4">
+                                支持多种数据格式和硬件平台，可通过插件扩展功能，满足不断变化的业务需求。
+                            </p>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-accent mt-1 mr-3"></i>
+                                    <span class="text-dark/70">支持SEG-Y、SU、CSV等主流数据格式</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-accent mt-1 mr-3"></i>
+                                    <span class="text-dark/70">兼容Windows、Linux和macOS操作系统</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-accent mt-1 mr-3"></i>
+                                    <span class="text-dark/70">开放API接口，支持二次开发和功能扩展</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 应用案例 -->
+    <section id="cases" class="section-padding bg-gray-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">应用案例</h2>
+                <div class="w-20 h-1 bg-primary mx-auto mb-6"></div>
+                <p class="text-dark/70 max-w-2xl mx-auto">SeisY已在多个领域成功应用，帮助用户解决实际问题</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- 案例1 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/110/800/500" alt="矿产资源勘探案例" class="w-full h-64 object-cover">
+                        <div class="absolute top-4 left-4 bg-primary text-white text-sm px-3 py-1 rounded-full">
+                            矿产资源勘探
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-3">金属矿勘探项目</h3>
+                        <p class="text-dark/70 mb-4">
+                            在某大型铜矿床勘探中，使用SeisY处理地震和重磁数据，成功圈定矿化带分布范围，
+                            为钻探工程提供精准靶区，提高勘探效率30%以上。
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full">地震勘探</span>
+                            <span class="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full">磁法测量</span>
+                            <span class="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full">三维建模</span>
+                        </div>
+                        <a href="#" class="text-primary hover:text-primary/80 font-medium flex items-center transition-custom">
+                            查看详情 <i class="fa fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- 案例2 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/133/800/500" alt="工程地质调查案例" class="w-full h-64 object-cover">
+                        <div class="absolute top-4 left-4 bg-primary text-white text-sm px-3 py-1 rounded-full">
+                            工程地质调查
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-3">高速公路工程勘察</h3>
+                        <p class="text-dark/70 mb-4">
+                            某高速公路选线工程中，利用SeisY处理高密度电法和地震折射数据，
+                            查明了线路范围内的不良地质体分布，为线路优化设计提供了可靠依据。
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full">电法勘探</span>
+                            <span class="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full">地震折射</span>
+                            <span class="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full">工程勘察</span>
+                        </div>
+                        <a href="#" class="text-primary hover:text-primary/80 font-medium flex items-center transition-custom">
+                            查看详情 <i class="fa fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 下载区域 -->
+    <section id="download" class="section-padding bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-4xl mx-auto bg-gradient-to-r from-primary to-secondary rounded-3xl overflow-hidden shadow-2xl">
+                <div class="grid md:grid-cols-2">
+                    <div class="p-8 md:p-12 text-white">
+                        <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-6">开始使用SeisY</h2>
+                        <p class="mb-8 text-white/90">
+                            下载SeisY软件，体验专业地球物理数据处理解决方案。支持Windows、Linux和macOS系统。
+                        </p>
+                        
+                        <div class="space-y-4 mb-8">
+                            <div class="flex items-center bg-white/10 backdrop-blur-sm rounded-lg p-4 hover:bg-white/20 transition-custom">
+                                <div class="w-10 h-10 rounded bg-white/20 flex items-center justify-center mr-4">
+                                    <i class="fa fa-windows text-xl"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-medium">Windows版</div>
+                                    <div class="text-white/80 text-sm">支持Windows 10/11 (64位)</div>
+                                </div>
+                                <a href="#" class="text-white hover:text-white/80 transition-custom">
+                                    <i class="fa fa-download text-xl"></i>
+                                </a>
+                            </div>
+                            
+                            <div class="flex items-center bg-white/10 backdrop-blur-sm rounded-lg p-4 hover:bg-white/20 transition-custom">
+                                <div class="w-10 h-10 rounded bg-white/20 flex items-center justify-center mr-4">
+                                    <i class="fa fa-linux text-xl"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-medium">Linux版</div>
+                                    <div class="text-white/80 text-sm">支持Ubuntu 20.04及以上</div>
+                                </div>
+                                <a href="#" class="text-white hover:text-white/80 transition-custom">
+                                    <i class="fa fa-download text-xl"></i>
+                                </a>
+                            </div>
+                            
+                            <div class="flex items-center bg-white/10 backdrop-blur-sm rounded-lg p-4 hover:bg-white/20 transition-custom">
+                                <div class="w-10 h-10 rounded bg-white/20 flex items-center justify-center mr-4">
+                                    <i class="fa fa-apple text-xl"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-medium">macOS版</div>
+                                    <div class="text-white/80 text-sm">支持macOS 11及以上</div>
+                                </div>
+                                <a href="#" class="text-white hover:text-white/80 transition-custom">
+                                    <i class="fa fa-download text-xl"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <p class="text-white/80 text-sm">
+                            免费试用版包含全部功能，试用期30天。如需长期使用，请联系我们获取授权。
+                        </p>
+                    </div>
+                    
+                    <div class="hidden md:block relative">
+                        <img src="https://picsum.photos/id/160/600/800" alt="SeisY软件界面" class="absolute inset-0 w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <div class="flex items-center space-x-2 mb-6">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center">
+                            <img src="../images/SeisY.ico" alt="SeisY" class="w-8 h-8">
+                        </div>
+                        <span class="font-bold text-xl">SeisY</span>
+                    </div>
+                    <p class="text-white/70 mb-6">
+                        专业的地球物理数据处理软件，为地质勘探、资源开发提供强大技术支持。
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/70 hover:bg-primary hover:text-white transition-custom">
+                            <i class="fa fa-weixin"></i>
+                        </a>
+                        <a href="mailto:ysp@cug.edu.cn" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/70 hover:bg-primary hover:text-white transition-custom">
+                            <i class="fa fa-envelope"></i>
+                        </a>
+                        <a href="https://github.com/YSP0Github/SeisY" target="_blank" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/70 hover:bg-primary hover:text-white transition-custom">
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-lg mb-6">快速链接</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#overview" class="text-white/70 hover:text-white transition-custom">软件概述</a></li>
+                        <li><a href="#features" class="text-white/70 hover:text-white transition-custom">核心功能</a></li>
+                        <li><a href="#tech" class="text-white/70 hover:text-white transition-custom">技术特点</a></li>
+                        <li><a href="#cases" class="text-white/70 hover:text-white transition-custom">应用案例</a></li>
+                        <li><a href="#download" class="text-white/70 hover:text-white transition-custom">下载中心</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-lg mb-6">资源中心</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-white/70 hover:text-white transition-custom">用户手册</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-custom">教程视频</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-custom">技术文档</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-custom">常见问题</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-custom">更新日志</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-lg mb-6">联系我们</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i class="fa fa-map-marker mt-1 mr-3 text-white/70"></i>
+                            <span class="text-white/70">北京市海淀区学院路30号地球科学大厦</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa fa-phone mr-3 text-white/70"></i>
+                            <span class="text-white/70">+86 10 8888 7777</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa fa-envelope mr-3 text-white/70"></i>
+                            <span class="text-white/70">contact@seisy.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-white/50 text-sm mb-4 md:mb-0">
+                    &copy; 2023 SeisY Software. 保留所有权利。
+                </p>
+                <div class="flex space-x-6">
+                    <a href="../Privacy_policy.html" target="_blank" class="text-white/50 hover:text-white text-sm transition-custom">隐私政策</a>
+                    <a href="../About_us.html" target="_blank" class="text-white/50 hover:text-white text-sm transition-custom">关于我们</a>
+                    <a href="#" class="text-white/50 hover:text-white text-sm transition-custom">用户协议</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 移动端菜单切换
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            const icon = menuToggle.querySelector('i');
+            if (icon.classList.contains('fa-bars')) {
+                icon.classList.replace('fa-bars', 'fa-times');
+            } else {
+                icon.classList.replace('fa-times', 'fa-bars');
+            }
+        });
+        
+        // 导航栏滚动效果
+        const navbar = document.getElementById('navbar');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('shadow-md');
+                navbar.classList.remove('shadow-sm');
+            } else {
+                navbar.classList.remove('shadow-md');
+                navbar.classList.add('shadow-sm');
+            }
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                // 关闭移动端菜单
+                if (!mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                    const icon = menuToggle.querySelector('i');
+                    icon.classList.replace('fa-times', 'fa-bars');
+                }
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // 性能对比图表
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['小型数据集', '中型数据集', '大型数据集', '超大型数据集'],
+                datasets: [
+                    {
+                        label: 'SeisY处理时间(分钟)',
+                        data: [2, 8, 25, 60],
+                        backgroundColor: '#0F52BA',
+                        borderRadius: 6
+                    },
+                    {
+                        label: '传统软件处理时间(分钟)',
+                        data: [5, 22, 85, 210],
+                        backgroundColor: '#94A3B8',
+                        borderRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: '数据处理性能对比'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '处理时间(分钟)'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 滚动动画
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+        
+        // 监听所有section中的主要内容块
+        document.querySelectorAll('section > div > div:not(.text-center)').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>方块消除大师 - 挑战你的反应能力</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6C63FF',
+                        secondary: '#FF6B6B',
+                        accent: '#4ECDC4',
+                        game: {
+                            red: '#FF5252',
+                            blue: '#448AFF',
+                            green: '#66BB6A',
+                            yellow: '#FFCA28',
+                            purple: '#BA68C8',
+                            orange: '#FF9800'
+                        }
+                    },
+                    fontFamily: {
+                        game: ['"Press Start 2P"', 'cursive', 'sans-serif'],
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
+            }
+            .block-transition {
+                transition: all 0.2s ease-out;
+            }
+            .pulse-animation {
+                animation: pulse 1.5s infinite;
+            }
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+            .shake-animation {
+                animation: shake 0.5s;
+            }
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+            .disappear-animation {
+                animation: disappear 0.3s forwards;
+            }
+            @keyframes disappear {
+                0% { transform: scale(1); opacity: 1; }
+                50% { transform: scale(1.2); opacity: 0.8; }
+                100% { transform: scale(0); opacity: 0; }
+            }
+            .appear-animation {
+                animation: appear 0.3s forwards;
+            }
+            @keyframes appear {
+                0% { transform: scale(0); opacity: 0; }
+                100% { transform: scale(1); opacity: 1; }
+            }
+        }
+    </style>
+    
+    <!-- 游戏字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-inter min-h-screen flex flex-col">
+    <!-- 游戏头部 -->
+    <header class="bg-primary text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center mb-4 md:mb-0">
+                <i class="fa fa-cubes text-2xl mr-3"></i>
+                <h1 class="text-xl md:text-2xl font-bold">方块消除大师</h1>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
+                <div class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg flex items-center">
+                    <i class="fa fa-clock-o mr-2"></i>
+                    <span id="time-display" class="font-bold">60</span>
+                    <span class="ml-1">秒</span>
+                </div>
+                
+                <div class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg flex items-center">
+                    <i class="fa fa-star mr-2"></i>
+                    <span id="score-display" class="font-bold">0</span>
+                    <span class="ml-1">分</span>
+                </div>
+                
+                <button id="restart-btn" class="bg-secondary hover:bg-secondary/90 text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 flex items-center">
+                    <i class="fa fa-refresh mr-2"></i>重新开始
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 游戏说明 -->
+    <div class="bg-white shadow-sm py-3 px-4">
+        <div class="container mx-auto">
+            <p class="text-gray-700 text-center">挑战你的反应能力，在限定时间内消除尽可能多的方块！<span class="text-secondary font-medium">特殊方块有额外奖励</span></p>
+        </div>
+    </div>
+
+    <!-- 游戏主区域 -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <!-- 游戏开始界面 -->
+        <div id="start-screen" class="flex flex-col items-center justify-center h-[60vh]">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary text-white mb-4 pulse-animation">
+                    <i class="fa fa-cubes text-3xl"></i>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-bold text-dark mb-4">方块消除大师</h2>
+                <p class="text-gray-600 max-w-md mx-auto">在60秒内点击并消除尽可能多的方块，获得高分！<br>特殊方块会带来额外分数或时间奖励</p>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 max-w-md w-full">
+                <div class="flex flex-col items-center">
+                    <div class="w-10 h-10 rounded bg-game-red mb-2"></div>
+                    <span class="text-sm text-gray-600">普通方块 +10分</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="w-10 h-10 rounded bg-game-yellow mb-2 relative">
+                        <span class="absolute inset-0 flex items-center justify-center text-dark font-bold text-xs">2x</span>
+                    </div>
+                    <span class="text-sm text-gray-600">双倍分数</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="w-10 h-10 rounded bg-game-green mb-2 relative">
+                        <span class="absolute inset-0 flex items-center justify-center text-dark font-bold text-xs">+5</span>
+                    </div>
+                    <span class="text-sm text-gray-600">额外时间</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="w-10 h-10 rounded bg-game-purple mb-2 relative">
+                        <span class="absolute inset-0 flex items-center justify-center text-dark font-bold text-xs">B</span>
+                    </div>
+                    <span class="text-sm text-gray-600">炸弹</span>
+                </div>
+            </div>
+            
+            <button id="start-btn" class="bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-lg transition-all duration-300 text-lg pulse-animation">
+                开始游戏 <i class="fa fa-play ml-2"></i>
+            </button>
+        </div>
+
+        <!-- 游戏区域 -->
+        <div id="game-area" class="hidden">
+            <!-- 游戏网格将由JS动态生成 -->
+            <div id="game-grid" class="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2 sm:gap-3 bg-white p-4 md:p-6 rounded-xl shadow-md"></div>
+            
+            <!-- 游戏信息 -->
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white p-4 rounded-lg shadow-sm">
+                    <h3 class="font-semibold text-gray-700 mb-2 flex items-center">
+                        <i class="fa fa-trophy text-yellow-500 mr-2"></i>当前得分
+                    </h3>
+                    <p id="current-score" class="text-2xl font-bold text-primary">0</p>
+                </div>
+                
+                <div class="bg-white p-4 rounded-lg shadow-sm">
+                    <h3 class="font-semibold text-gray-700 mb-2 flex items-center">
+                        <i class="fa fa-clock-o text-secondary mr-2"></i>剩余时间
+                    </h3>
+                    <p id="current-time" class="text-2xl font-bold text-secondary">60</p>
+                </div>
+                
+                <div class="bg-white p-4 rounded-lg shadow-sm">
+                    <h3 class="font-semibold text-gray-700 mb-2 flex items-center">
+                        <i class="fa fa-fire text-orange-500 mr-2"></i>方块消除
+                    </h3>
+                    <p id="blocks-cleared" class="text-2xl font-bold text-orange-500">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏结束界面 -->
+        <div id="end-screen" class="hidden flex flex-col items-center justify-center h-[60vh]">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-secondary text-white mb-4">
+                    <i class="fa fa-trophy text-3xl"></i>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-bold text-dark mb-2">游戏结束！</h2>
+                <p class="text-xl text-gray-600 mb-6">你的最终得分</p>
+                <p id="final-score" class="text-5xl font-bold text-primary mb-6">0</p>
+                
+                <div class="grid grid-cols-2 gap-6 max-w-md mx-auto mb-8">
+                    <div>
+                        <p class="text-gray-500 text-sm">方块消除</p>
+                        <p id="end-blocks-cleared" class="text-2xl font-bold">0</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm">最高记录</p>
+                        <p id="high-score" class="text-2xl font-bold">0</p>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="play-again-btn" class="bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-lg transition-all duration-300 text-lg">
+                再玩一次 <i class="fa fa-refresh ml-2"></i>
+            </button>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p>© 2023 方块消除大师 | 一个考验反应能力的趣味游戏</p>
+            <p class="text-gray-400 text-sm mt-2">返回 <a href="index.html" class="text-primary hover:underline">趣味屋</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // 游戏配置
+        const GAME_CONFIG = {
+            gridSize: {
+                rows: 8,
+                cols: 10
+            },
+            gameTime: 60, // 游戏时间（秒）
+            blockTypes: {
+                normal: {
+                    colors: ['game-red', 'game-blue', 'game-orange'],
+                    points: 10
+                },
+                double: {
+                    color: 'game-yellow',
+                    points: 20,
+                    chance: 15 // 15%的概率生成
+                },
+                time: {
+                    color: 'game-green',
+                    points: 15,
+                    timeBonus: 5,
+                    chance: 10 // 10%的概率生成
+                },
+                bomb: {
+                    color: 'game-purple',
+                    points: 25,
+                    chance: 8 // 8%的概率生成
+                }
+            },
+            spawnRate: {
+                initial: 1000, // 初始生成速度（毫秒）
+                min: 300, // 最小生成速度
+                decrease: 50 // 每10秒减少的毫秒数
+            }
+        };
+
+        // 游戏状态
+        const gameState = {
+            score: 0,
+            timeRemaining: GAME_CONFIG.gameTime,
+            blocksCleared: 0,
+            isPlaying: false,
+            timer: null,
+            spawnTimer: null,
+            currentSpawnRate: GAME_CONFIG.spawnRate.initial,
+            highScore: localStorage.getItem('blockMasterHighScore') || 0
+        };
+
+        // DOM元素
+        const elements = {
+            startScreen: document.getElementById('start-screen'),
+            gameArea: document.getElementById('game-area'),
+            endScreen: document.getElementById('end-screen'),
+            gameGrid: document.getElementById('game-grid'),
+            startBtn: document.getElementById('start-btn'),
+            restartBtn: document.getElementById('restart-btn'),
+            playAgainBtn: document.getElementById('play-again-btn'),
+            scoreDisplay: document.getElementById('score-display'),
+            timeDisplay: document.getElementById('time-display'),
+            currentScore: document.getElementById('current-score'),
+            currentTime: document.getElementById('current-time'),
+            blocksCleared: document.getElementById('blocks-cleared'),
+            finalScore: document.getElementById('final-score'),
+            endBlocksCleared: document.getElementById('end-blocks-cleared'),
+            highScore: document.getElementById('high-score')
+        };
+
+        // 初始化游戏
+        function initGame() {
+            // 设置最高分
+            elements.highScore.textContent = gameState.highScore;
+            
+            // 事件监听
+            elements.startBtn.addEventListener('click', startGame);
+            elements.restartBtn.addEventListener('click', restartGame);
+            elements.playAgainBtn.addEventListener('click', restartGame);
+            
+            // 初始化游戏网格
+            createGameGrid();
+        }
+
+        // 创建游戏网格
+        function createGameGrid() {
+            elements.gameGrid.innerHTML = '';
+            elements.gameGrid.style.gridTemplateColumns = `repeat(${GAME_CONFIG.gridSize.cols}, 1fr)`;
+        }
+
+        // 开始游戏
+        function startGame() {
+            // 重置游戏状态
+            resetGameState();
+            
+            // 显示游戏区域，隐藏开始界面
+            elements.startScreen.classList.add('hidden');
+            elements.endScreen.classList.add('hidden');
+            elements.gameArea.classList.remove('hidden');
+            
+            // 开始计时
+            gameState.isPlaying = true;
+            startTimer();
+            startSpawningBlocks();
+        }
+
+        // 重置游戏状态
+        function resetGameState() {
+            gameState.score = 0;
+            gameState.timeRemaining = GAME_CONFIG.gameTime;
+            gameState.blocksCleared = 0;
+            gameState.currentSpawnRate = GAME_CONFIG.spawnRate.initial;
+            
+            // 清除计时器
+            if (gameState.timer) clearInterval(gameState.timer);
+            if (gameState.spawnTimer) clearInterval(gameState.spawnTimer);
+            
+            // 清空网格
+            elements.gameGrid.innerHTML = '';
+            
+            // 更新显示
+            updateScoreDisplay();
+        }
+
+        // 开始计时器
+        function startTimer() {
+            gameState.timer = setInterval(() => {
+                gameState.timeRemaining--;
+                updateTimeDisplay();
+                
+                // 调整生成速度
+                if (gameState.timeRemaining % 10 === 0 && gameState.timeRemaining > 0) {
+                    gameState.currentSpawnRate = Math.max(
+                        GAME_CONFIG.spawnRate.min,
+                        gameState.currentSpawnRate - GAME_CONFIG.spawnRate.decrease
+                    );
+                    
+                    // 重新设置生成计时器以应用新速度
+                    clearInterval(gameState.spawnTimer);
+                    startSpawningBlocks();
+                }
+                
+                // 时间到，游戏结束
+                if (gameState.timeRemaining <= 0) {
+                    endGame();
+                }
+                
+                // 最后10秒添加视觉提醒
+                if (gameState.timeRemaining <= 10) {
+                    elements.currentTime.classList.add('text-red-500', 'shake-animation');
+                    setTimeout(() => {
+                        elements.currentTime.classList.remove('shake-animation');
+                    }, 500);
+                }
+            }, 1000);
+        }
+
+        // 开始生成方块
+        function startSpawningBlocks() {
+            gameState.spawnTimer = setInterval(() => {
+                if (gameState.isPlaying) {
+                    spawnBlock();
+                }
+            }, gameState.currentSpawnRate);
+        }
+
+        // 生成方块
+        function spawnBlock() {
+            // 随机决定方块类型
+            const random = Math.random() * 100;
+            let blockType, blockColor, blockPoints, blockSpecial = null;
+            
+            if (random < GAME_CONFIG.blockTypes.bomb.chance) {
+                // 炸弹方块
+                blockType = 'bomb';
+                blockColor = GAME_CONFIG.blockTypes.bomb.color;
+                blockPoints = GAME_CONFIG.blockTypes.bomb.points;
+                blockSpecial = 'bomb';
+            } else if (random < GAME_CONFIG.blockTypes.bomb.chance + GAME_CONFIG.blockTypes.time.chance) {
+                // 时间方块
+                blockType = 'time';
+                blockColor = GAME_CONFIG.blockTypes.time.color;
+                blockPoints = GAME_CONFIG.blockTypes.time.points;
+                blockSpecial = 'time';
+            } else if (random < GAME_CONFIG.blockTypes.bomb.chance + GAME_CONFIG.blockTypes.time.chance + GAME_CONFIG.blockTypes.double.chance) {
+                // 双倍分数方块
+                blockType = 'double';
+                blockColor = GAME_CONFIG.blockTypes.double.color;
+                blockPoints = GAME_CONFIG.blockTypes.double.points;
+                blockSpecial = 'double';
+            } else {
+                // 普通方块
+                blockType = 'normal';
+                const colorIndex = Math.floor(Math.random() * GAME_CONFIG.blockTypes.normal.colors.length);
+                blockColor = GAME_CONFIG.blockTypes.normal.colors[colorIndex];
+                blockPoints = GAME_CONFIG.blockTypes.normal.points;
+            }
+            
+            // 创建方块元素
+            const block = document.createElement('div');
+            const size = Math.floor(Math.random() * 15) + 35; // 随机大小 35-50px
+            const borderRadius = Math.floor(Math.random() * 6) + 2; // 2-8px 圆角
+            
+            block.className = `block-transition appear-animation cursor-pointer rounded-${borderRadius} bg-${blockColor}`;
+            block.style.width = `${size}px`;
+            block.style.height = `${size}px`;
+            block.dataset.type = blockType;
+            block.dataset.points = blockPoints;
+            
+            // 为特殊方块添加标识
+            if (blockSpecial) {
+                const specialIndicator = document.createElement('span');
+                specialIndicator.className = 'text-dark font-bold text-xs absolute inset-0 flex items-center justify-center';
+                
+                switch (blockSpecial) {
+                    case 'double':
+                        specialIndicator.textContent = '2x';
+                        break;
+                    case 'time':
+                        specialIndicator.textContent = '+5';
+                        break;
+                    case 'bomb':
+                        specialIndicator.textContent = 'B';
+                        break;
+                }
+                
+                block.appendChild(specialIndicator);
+                block.classList.add('relative');
+            }
+            
+            // 随机位置 - 修复版
+            // 获取游戏网格的实际尺寸和位置
+            const gridRect = elements.gameGrid.getBoundingClientRect();
+            // 计算最大left和top值，确保方块完全在网格内
+            const maxLeft = gridRect.width - size;
+            const maxTop = gridRect.height - size;
+            // 生成随机位置
+            const left = Math.floor(Math.random() * maxLeft);
+            const top = Math.floor(Math.random() * maxTop);
+            
+            block.style.position = 'absolute';
+            block.style.left = `${left}px`;
+            block.style.top = `${top}px`;
+            
+            // 添加点击事件
+            block.addEventListener('click', () => {
+                clearBlock(block, blockType, blockPoints);
+            });
+            
+            // 添加到网格
+            elements.gameGrid.appendChild(block);
+            
+            // 设置方块消失时间（5-8秒）
+            const removeTime = Math.random() * 3000 + 5000;
+            setTimeout(() => {
+                if (elements.gameGrid.contains(block)) {
+                    block.classList.add('shake-animation');
+                    setTimeout(() => {
+                        if (elements.gameGrid.contains(block)) {
+                            elements.gameGrid.removeChild(block);
+                        }
+                    }, 500);
+                }
+            }, removeTime);
+        }
+
+
+        // 消除方块
+        function clearBlock(block, type, points) {
+            if (!gameState.isPlaying) return;
+            
+            // 播放消除动画
+            block.classList.add('disappear-animation');
+            
+            // 增加分数和计数
+            gameState.score += points;
+            gameState.blocksCleared++;
+            
+            // 处理特殊方块
+            if (type === 'time') {
+                gameState.timeRemaining += GAME_CONFIG.blockTypes.time.timeBonus;
+                updateTimeDisplay();
+                
+                // 显示时间增加提示
+                showFloatingText(block, `+${GAME_CONFIG.blockTypes.time.timeBonus}s`, 'green');
+            } else if (type === 'bomb') {
+                // 炸弹消除所有方块
+                const allBlocks = elements.gameGrid.querySelectorAll('div');
+                allBlocks.forEach(b => {
+                    if (b !== block && !b.classList.contains('disappear-animation')) {
+                        const bPoints = parseInt(b.dataset.points);
+                        gameState.score += bPoints;
+                        gameState.blocksCleared++;
+                        b.classList.add('disappear-animation');
+                        setTimeout(() => {
+                            if (elements.gameGrid.contains(b)) {
+                                elements.gameGrid.removeChild(b);
+                            }
+                        }, 300);
+                    }
+                });
+                
+                // 显示炸弹提示
+                showFloatingText(block, 'BOOM!', 'purple');
+            } else if (type === 'double') {
+                // 显示双倍分数提示
+                showFloatingText(block, `+${points}`, 'yellow');
+            } else {
+                // 显示普通分数提示
+                showFloatingText(block, `+${points}`, 'white');
+            }
+            
+            // 更新显示
+            updateScoreDisplay();
+            
+            // 移除方块
+            setTimeout(() => {
+                if (elements.gameGrid.contains(block)) {
+                    elements.gameGrid.removeChild(block);
+                }
+            }, 300);
+        }
+
+        // 显示浮动文本
+        function showFloatingText(element, text, color) {
+            const floatingText = document.createElement('div');
+            floatingText.className = 'absolute text-white font-bold pointer-events-none z-10';
+            floatingText.style.color = color;
+            floatingText.style.left = '50%';
+            floatingText.style.top = '50%';
+            floatingText.style.transform = 'translate(-50%, -50%)';
+            floatingText.style.textShadow = '1px 1px 2px rgba(0,0,0,0.5)';
+            floatingText.style.animation = 'floatUp 1s forwards';
+            floatingText.textContent = text;
+            
+            // 添加浮动动画样式
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes floatUp {
+                    0% { transform: translate(-50%, -50%); opacity: 1; }
+                    100% { transform: translate(-50%, -100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            element.appendChild(floatingText);
+            
+            // 移除浮动文本元素
+            setTimeout(() => {
+                if (element.contains(floatingText)) {
+                    element.removeChild(floatingText);
+                }
+            }, 1000);
+        }
+
+        // 更新分数显示
+        function updateScoreDisplay() {
+            elements.scoreDisplay.textContent = gameState.score;
+            elements.currentScore.textContent = gameState.score;
+            elements.blocksCleared.textContent = gameState.blocksCleared;
+        }
+
+        // 更新时间显示
+        function updateTimeDisplay() {
+            elements.timeDisplay.textContent = gameState.timeRemaining;
+            elements.currentTime.textContent = gameState.timeRemaining;
+        }
+
+        // 结束游戏
+        function endGame() {
+            gameState.isPlaying = false;
+            
+            // 清除计时器
+            clearInterval(gameState.timer);
+            clearInterval(gameState.spawnTimer);
+            
+            // 检查是否为最高分
+            const isNewHighScore = gameState.score > gameState.highScore;
+            if (isNewHighScore) {
+                gameState.highScore = gameState.score;
+                localStorage.setItem('blockMasterHighScore', gameState.highScore);
+                elements.highScore.textContent = gameState.highScore;
+            }
+            
+            // 更新结束界面
+            elements.finalScore.textContent = gameState.score;
+            elements.endBlocksCleared.textContent = gameState.blocksCleared;
+            
+            // 显示结束界面，隐藏游戏区域
+            elements.gameArea.classList.add('hidden');
+            elements.endScreen.classList.remove('hidden');
+            
+            // 如果是新纪录，添加特殊效果
+            if (isNewHighScore) {
+                elements.finalScore.classList.add('text-yellow-500', 'pulse-animation');
+                const newRecordText = document.createElement('p');
+                newRecordText.className = 'text-xl text-yellow-500 font-bold mb-4';
+                newRecordText.textContent = '新纪录！';
+                elements.finalScore.parentNode.insertBefore(newRecordText, elements.finalScore.nextSibling);
+            }
+        }
+
+        // 重新开始游戏
+        function restartGame() {
+            // 移除可能存在的新纪录文本
+            const newRecordText = elements.finalScore.parentNode.querySelector('.text-yellow-500.font-bold');
+            if (newRecordText) {
+                newRecordText.remove();
+            }
+            
+            elements.finalScore.classList.remove('text-yellow-500', 'pulse-animation');
+            elements.currentTime.classList.remove('text-red-500');
+            
+            startGame();
+        }
+
+        // 页面加载完成后初始化游戏
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>个人空间</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../YSZJ_style.css" type="text/css" rel="stylesheet">
+    <link rel="icon" href="../images/YSZJ_logo_orange.ico">
+    <style>
+        html,body{
+            height: 100%;
+            width: 100%;
+            background-size: 100%;
+        }
+        viedo{
+            height:auto;
+            width: 100%;
+            object-fit: cover;;
+            position: fixed;
+            left:0;
+            top:0;
+        }
+
+        .bgviedo{
+            position: fixed;
+            z-index: -1
+        }
+        @media (min-aspect-ratio: 16/9){
+            .bgviedo{
+                width: auto;
+                height: 100%;
+            }
+        }
+        @media (max-aspect-ratio: 16/9){
+            .bgviedo{
+                width: 100%;
+                height: auto;
+            }
+        }
+        @media (max-widthL: 767px){
+            .bgviedo{
+                display:none;
+            }
+            body{
+                /* background: url(images/earth_.jpg); */
+                background-size: cover;
+            }
+        }
+
+    </style>
+</head>
+<!-- <body background = "images/earth_.jpg"> -->
+    <!-- <div class="bodybg"> -->
+<body >       
+    <video autoplay muted loop src="../videos/earth_.mp4" class="bgviedo"> </video>
+
+    <div class="top">
+            <div class="menue">
+                <div class="box">
+                    <div class="yskylogo"> 
+                        <!-- <img src="images/YSZJ_orange.png" alt="logo" class="logo"> -->
+                        <a class="logo"> 个人空间 </a> 
+                    </div>
+                    <ul class="ul_menue">
+                        
+                        <li class="item">
+                            <a href="../index.html">云凇之家 </a>
+                        </li>
+                        <li class="item">
+                            <a href="funhome.html" target="_blank" >趣味屋</a>
+                        </li>
+                        <li class="item">
+                            <a href="#" >导航栏 </a> 
+                        </li>
+                        <li class="item">
+                            <a href="# " >导航栏</a> 
+                        </li>
+                        <li class="item">
+                            <a href="#album">导航栏 </a> 
+                        </li>
+                        <li class="item">
+                            <a href="#album">导航栏 </a> 
+                        </li>
+                    </ul>
+                    <div class="searchbox" >
+                        <div class="searchBar">
+                            <div class="icon"></div>
+                            <div class="textinput">
+                                <input type="text" placeholder="请输入关键词搜索...">
+                                <input type="submit" value="go" id="go">
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+    </div>
+    <script>
+        let oSearchBar=document.querySelector('.searchBar');
+        let oIcon=document.querySelector('.icon');
+        let oClear=document.querySelector('.clear');
+        let oText=document.querySelector('input[type="text"]');
+
+        oIcon.addEventListener('click',() => {
+            oSearchBar.classList.toggle('changeWidth')
+        });
+
+        oClear.addEventListener('click',() => {
+            oText.value = '';
+        });
+    </script>
+
+    <div class="box2">
+              
+    </div>
+
+
+
+    <div class="footer">
+        <!-- <ul class="footer_ul"> -->
+            <li><a href="#">帮助中心</a></li>丨
+            <li><a href="#">关于我们</a></li>丨
+            <li><a href="#">在线留言</a></li>丨
+            <li><a href="#">科技创新</a></li>丨
+            <li><a href="#">开放发展</a></li>
+        <!-- </ul> -->
+        <br>
+        <span>QQ群:123456789&nbsp;&nbsp;邮箱:yspyswh@163.com</span>
+        <br>
+        <span >©2016-2023&nbsp;云凇之家 </span>
+    </div>
+</div>
+</body>
+</html>

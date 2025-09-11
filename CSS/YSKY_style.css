@@ -1,0 +1,202 @@
+.top{
+    width:100%; 
+    height:300px; 
+    background:  rgba(201, 200, 200, 0.5) ;
+}
+.mac{
+    width:100%; 
+    height:100%;
+}
+.topwords{
+    float: left;
+    width: 40%;
+    height: 60%;
+    margin-top: 100px;
+    margin-left: 10%;
+}
+.topwords .item{
+    font-size: 30px;
+    font-style: normal;
+    color: rgb(0, 0, 0);
+}
+
+.toppic{
+    float: right;
+    width: 40%;
+    height: 100%;
+    margin-top: 0;
+    padding-right:0%;
+}
+.wavepic{
+    float: right;
+    width: auto;
+    height: 130%;
+    margin-right: 10%;
+}
+
+.top>.menue{
+    width:100%;
+    height:80px;
+    background:#333;
+    box-shadow:0 1px 2px  #333;
+    position:fixed;
+    top: 0;
+    left: 0;
+}
+.top>.menue>.box1{
+    width:80%; 
+    height:100%; 
+    margin: auto;
+}
+
+.ul_menue{
+    height:100%; 
+    list-style: none;
+    float: right;
+}
+.ul_menue .item{
+    float:left;
+    height:100%;
+    line-height: 50px;
+    padding: 0 10px;
+    margin: 0;
+    color:white;
+    font-size: 20px;
+    cursor:pointer;
+}
+.ul_menue a{ text-decoration: none; color: #fff; }
+.ul_menue a:hover{color: darkgrey;}
+
+.yskylogo{
+    float: left;
+    width: 200px;
+    height:100%;
+}
+ 
+.yskylogo a:hover{color: aqua; }
+
+.yskylogo .logo{
+    float: left;
+    width: 80%;
+    height: auto;
+    padding-top: 20px;
+    font-size: 30px;
+    text-align:left;
+    color: #fff;
+    cursor:pointer;
+
+}
+.yskylogo .wave{
+    float: left;
+    width: auto;
+    height: 100%;
+
+}
+
+.box2{
+    float:left;
+    width: 100%;
+    height:500px;
+    background: #e5e5e5;
+}
+
+.box3{
+    float:left;
+    width: 100%;
+    height:500px;
+    background: white;
+}
+
+.box4{
+    float:left;
+    width: 100%;
+    height:500px;
+    background: #e5e5e5;
+}
+
+.box5{
+    float:left;
+    width: 100%;
+    height:500px;
+    background: white;
+}
+
+._logo{
+    float: left;
+    width: 20%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items:center;
+    justify-content:flex-end;
+    padding-right: 20px;
+}
+.d_logo{
+    float: left;
+    width:auto;
+    height:60px; 
+}
+._word{
+    float: left;
+    width: 20%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+}
+ .d_words{
+    font-size: 60px;
+}
+
+._menue{
+    float: left;
+    border: 1px;
+    width: 50%;
+    height:100%; 
+    
+ 
+}
+
+
+._menue .item{
+    float:left;
+    height:100%;
+    padding: 0 50px;
+    margin-top: 50px;
+    font-size: 30px;
+    list-style: none;
+    cursor:pointer;
+}
+
+._menue a{ text-decoration: none; color: #000; }
+._menue a:hover{color: darkgrey;}
+
+.footer{
+    float: left;
+    width:100%;
+    height:50px;
+    color: #000;
+    text-align: center;
+    padding-top: 20px;
+    position: relative;
+    bottom: 0%;
+    font-size: 15px;
+}
+
+.footer li{
+   display:inline;
+
+}
+
+.footer li a{
+    text-decoration: none; 
+    color: #000; 
+}
+.footer li a:hover{
+    text-decoration: underline; 
+    color: #cccccc; 
+}
+
+body{ margin: 0px; }
+
