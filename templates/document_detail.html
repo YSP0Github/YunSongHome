@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ doc.title }} - 云凇学术</title>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-50">
+    <!-- 导航栏（可复用首页导航） -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <!-- 导航栏内容与首页一致 -->
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+            <div class="flex justify-between items-start">
+                <h1 class="text-2xl font-bold text-slate-800 mb-4">{{ doc.title }}</h1>
+                <a href="{{ url_for('download_document', doc_id=doc.id) }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
+                    <i class="fa fa-file-text-o mr-2"></i> 在线查看
+                </a>
+            </div>
+            
+            <p class="text-slate-600 mb-4">
+                <strong>作者：</strong>{{ doc.authors }}
+            </p>
+            <p class="text-slate-600 mb-4">
+                <strong>期刊/会议：</strong>{{ doc.journal or '未填写' }}
+            </p>
+            <p class="text-slate-600 mb-4">
+                <strong>发表年份：</strong>{{ doc.year or '未填写' }}
+            </p>
+            <p class="text-slate-600 mb-4">
+                <strong>分类：</strong>{{ doc.category }}
+            </p>
+            <p class="text-slate-600 mb-4">
+                <strong>关键词：</strong>
+                {% for tag in doc.tags.split(',') %}
+                <span class="bg-slate-100 px-2 py-1 rounded-full text-sm">{{ tag }}</span>
+                {% endfor %}
+            </p>
+            <p class="text-slate-600 mb-4">
+                <strong>文件信息：</strong>{{ doc.file_name }}（{{ doc.file_size|filesizeformat }}）
+            </p>
+            
+            <div class="mt-8">
+                <h2 class="text-xl font-semibold mb-3 border-b pb-2">摘要</h2>
+                <p class="text-slate-700 leading-relaxed">
+                    {{ doc.abstract or '未提供摘要' }}
+                </p>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
