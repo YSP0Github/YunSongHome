@@ -4,9 +4,12 @@ from datetime import datetime
 import os
 from werkzeug.utils import secure_filename
 from sqlalchemy import or_
+from flask_cors import CORS  # 新增导入
 
 # 初始化Flask应用
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}})  # 允许所有源访问（开发环境用，生产环境需限制具体源）
+
 # 配置数据库：当前文件夹下创建 literature.db 文件
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///literature.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # 关闭不必要的警告
@@ -102,6 +105,25 @@ def create_test_data():
     ]
     db.session.add_all(docs)
     db.session.commit()
+
+# 新增：获取文献列表的API接口（供前端调用）
+@app.route('/api/documents')
+def get_documents():
+    documents = Document.query.all()
+    # 转换为JSON格式（只返回需要的字段）
+    data = [
+        {
+            "id": doc.id,
+            "title": doc.title,
+            "authors": doc.authors,
+            "journal": doc.journal,
+            "year": doc.year,
+            "category": doc.category,
+            "view_count": doc.view_count
+            # 按需添加其他字段
+        } for doc in documents
+    ]
+    return {"total": len(data), "documents": data}  # 返回JSON
 
 # 首页路由：显示文献列表
 @app.route('/')
@@ -253,11 +275,11 @@ def download_document(doc_id):
 
 # 启动应用
 if __name__ == '__main__':
-    # 创建数据库表和测试数据（只在首次运行时执行）
-    with app.app_context():
-        db.create_all()  # 创建表
-        # 检查是否已有数据，没有则添加测试数据
-        if Document.query.count() == 0:
-            create_test_data()
-    # 启动服务器（debug=True表示自动刷新）
-    app.run(debug=True)
+    try:
+        with app.app_context():
+            db.create_all()
+            if Document.query.count() == 0:
+                create_test_data()
+        app.run(debug=True,port=5000)
+    except Exception as e:
+        print(f"启动失败: {str(e)}")
